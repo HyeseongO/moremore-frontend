@@ -4,6 +4,7 @@ import MoremoreOnImage from '../assets/images/moremoreOn.svg?react';
 import GoogleSignUp from '../assets/images/signup-google.svg?react';
 import Input from '../components/Input';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 function LoginPage() {
   const [emailValue, setEmailValue] = useState('');
@@ -27,14 +28,14 @@ function LoginPage() {
 
   return (
     <div className="relative min-h-screen bg-blue-400">
-      <Background>
+      <Background size="medium">
         <WelcomeImage className="w-48 h-48 mx-auto mb-5" />
         <MoremoreOnImage />
         <div className="mb-5" />
         <div className="w-64 mx-auto">
           <Input
             type="email"
-            placeholder="example@library.com"
+            placeholder="example@moremore.com"
             value={emailValue}
             onChange={handleEmailChange}
             name="email"
@@ -72,9 +73,9 @@ function LoginPage() {
           <span className="text-gray-600">
             아직 모어모어온 회원이 아니신가요?{' '}
           </span>
-          <a href="#" className="text-blue-500 hover:underline">
+          <Link to="/signup" className="text-blue-500 hover:underline">
             회원가입
-          </a>
+          </Link>
         </div>
       </Background>
     </div>
