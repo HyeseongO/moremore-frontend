@@ -1,5 +1,4 @@
 import Background from '../components/Background';
-
 import WelcomeImage from '../assets/images/welcomeImage.svg?react';
 import MoremoreOnImage from '../assets/images/moremoreOn.svg?react';
 import GoogleSignUp from '../assets/images/signup-google.svg?react';
@@ -7,8 +6,24 @@ import Input from '../components/Input';
 import { useState } from 'react';
 
 function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [emailValue, setEmailValue] = useState('');
+  const [isEmailValid, setEmailValid] = useState(false);
+  const [passwordValue, setPasswordValue] = useState('');
+  const [isPasswordValid, setIsPasswordValid] = useState(false);
+
+  const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setEmailValue(value);
+    const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    setEmailValid(isValidEmail);
+  };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setPasswordValue(value);
+    const isValidPassword = value.trim().length >= 8;
+    setIsPasswordValid(isValidPassword);
+  };
 
   return (
     <div className="relative min-h-screen bg-blue-400">
@@ -20,20 +35,26 @@ function LoginPage() {
           <Input
             type="email"
             placeholder="example@library.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={emailValue}
+            onChange={handleEmailChange}
             name="email"
             className="w-full border-2 px-6 py-2 rounded-lg hover:bg-gray-50 invalid:border-red-600 invalid:text-red-600 focus:border-blue-600"
           />
+          {emailValue && !isEmailValid && (
+            <p style={{ color: 'red' }}>유효하지 않은 이메일 형식입니다.</p>
+          )}
           <div className="mb-2" />
           <Input
             type="password"
             placeholder="******"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={passwordValue}
+            onChange={handlePasswordChange}
             name="password"
             className="w-full border-2 px-6 py-2 rounded-lg hover:bg-gray-50 focus:border-blue-600"
           />
+          {passwordValue && !isPasswordValid && (
+            <p style={{ color: 'red' }}>잘못된 비밀번호 형식입니다.</p>
+          )}
           <div className="mb-8" />
           <button className="w-full bg-black text-white py-3 rounded-lg font-medium active:bg-gray-700 hover:bg-gray-800 transition-colors">
             로그인
