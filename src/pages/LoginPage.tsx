@@ -60,7 +60,7 @@ function LoginPage() {
           <button className="w-full bg-black text-white py-3 rounded-lg font-medium active:bg-gray-700 hover:bg-gray-800 transition-colors">
             로그인
           </button>
-          <div className="flex items-center my-8">
+          <div className="flex items-center my-8 mt-3">
             <div className="flex-1 border-t-2 border-gray-300"></div>
             <span className="px-4 text-black-600 text-lg">Or</span>
             <div className="flex-1 border-t-2 border-gray-300"></div>
