@@ -7,7 +7,7 @@ interface BackgroundProps {
 
 const sizeClasses = {
   small: 'w-[600px] h-[600px]',
-  medium: 'w-[1000px] h-[600px]',
+  medium: 'w-[1000px] h-[650px]',
   large: 'w-[1300px] h-[700px]',
 };
 

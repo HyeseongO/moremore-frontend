@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Background from '../components/Background';
 import Input from '../components/Input';
 import BackIcon from '../assets/images/arrow-back.svg?react';
@@ -19,6 +20,8 @@ function SignUpPage() {
   const [nicknameError, setNicknameError] = useState<string[]>([]);
   const [passwordError, setPasswordError] = useState<string[]>([]);
   const [repasswordError, setRePasswordError] = useState<string[]>([]);
+
+  const navigate = useNavigate();
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -44,6 +47,33 @@ function SignUpPage() {
     setRePasswordError(
       password === value ? [] : ['비밀번호가 일치하지 않습니다!']
     );
+  };
+
+  const handleSignup = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, nickname, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('회원가입 실패:', errorData);
+        alert(`회원가입 실패: ${errorData.message?.join(', ') || '서버 오류'}`);
+        return;
+      }
+
+      const data = await response.json();
+      console.log('회원가입 성공:', data);
+      alert('회원가입이 완료되었습니다!');
+      navigate('/');
+    } catch (error) {
+      console.error('서버 오류:', error);
+      alert('서버와 통신 중 오류가 발생했습니다.');
+    }
   };
 
   return (
@@ -136,8 +166,8 @@ function SignUpPage() {
             ))}
           </div>
           <button
-            type="submit"
             className="w-full py-3 mt-5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+            onClick={handleSignup}
           >
             회원가입
           </button>

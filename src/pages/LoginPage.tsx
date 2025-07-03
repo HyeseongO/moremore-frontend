@@ -4,13 +4,15 @@ import MoremoreOnImage from '../assets/images/moremoreOn.svg?react';
 import GoogleSignUp from '../assets/images/signup-google.svg?react';
 import Input from '../components/Input';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function LoginPage() {
   const [emailValue, setEmailValue] = useState('');
   const [isEmailValid, setEmailValid] = useState(false);
   const [passwordValue, setPasswordValue] = useState('');
   const [isPasswordValid, setIsPasswordValid] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
@@ -26,10 +28,41 @@ function LoginPage() {
     setIsPasswordValid(isValidPassword);
   };
 
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: emailValue,
+          password: passwordValue,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        alert(error.message || '로그인 실패');
+        return;
+      }
+
+      const data = await response.json();
+      console.log('로그인 성공:', data);
+
+      localStorage.setItem('accessToken', data.accessToken);
+
+      navigate('/main');
+    } catch (error) {
+      console.error('로그인 에러:', error);
+      alert('서버 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-blue-400">
       <Background size="medium">
-        <WelcomeImage className="w-48 h-48 mx-auto mb-5" />
+        <WelcomeImage className="w-48 h-48 mx-auto mb-5 mt-5" />
         <MoremoreOnImage />
         <div className="mb-5" />
         <div className="w-64 mx-auto">
@@ -57,7 +90,10 @@ function LoginPage() {
             <p style={{ color: 'red' }}>잘못된 비밀번호 형식입니다.</p>
           )}
           <div className="mb-8" />
-          <button className="w-full bg-black text-white py-3 rounded-lg font-medium active:bg-gray-700 hover:bg-gray-800 transition-colors">
+          <button
+            className="w-full bg-black text-white py-3 rounded-lg font-medium active:bg-gray-700 hover:bg-gray-800 transition-colors"
+            onClick={handleLogin}
+          >
             로그인
           </button>
           <div className="flex items-center my-8 mt-3">
