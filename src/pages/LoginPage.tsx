@@ -30,11 +30,12 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://localhost:8000/auth/login', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           email: emailValue,
           password: passwordValue,
@@ -50,13 +51,15 @@ function LoginPage() {
       const data = await response.json();
       console.log('로그인 성공:', data);
 
-      localStorage.setItem('accessToken', data.accessToken);
-
       navigate('/main');
     } catch (error) {
       console.error('로그인 에러:', error);
       alert('서버 오류가 발생했습니다.');
     }
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
   };
 
   return (
@@ -101,14 +104,12 @@ function LoginPage() {
             <span className="px-4 text-black-600 text-lg">Or</span>
             <div className="flex-1 border-t-2 border-gray-300"></div>
           </div>
-          <button className="block mx-auto -mt-6">
+          <button onClick={handleGoogleLogin} className="block mx-auto -mt-6">
             <GoogleSignUp />
           </button>
         </div>
         <div className="text-center mt-4">
-          <span className="text-gray-600">
-            아직 모어모어온 회원이 아니신가요?{' '}
-          </span>
+          <span className="text-gray-600">아직 모어모어온 회원이 아니신가요? </span>
           <Link to="/signup" className="text-blue-500 hover:underline">
             회원가입
           </Link>
