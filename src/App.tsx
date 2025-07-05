@@ -5,12 +5,14 @@ import MainPage from './pages/MainPage';
 import SettingPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import RoomPage from './pages/RoomPage';
+import GoogleSignup from './pages/GoogleSignUp';
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/signup" element={<SignUpPage />} />
+      <Route path="/googleSignup" element={<GoogleSignup />} />
       <Route path="/main" element={<MainPage />} />
       <Route path="/main/settings" element={<SettingPage />} />
       <Route path="/main/profile" element={<ProfilePage />} />

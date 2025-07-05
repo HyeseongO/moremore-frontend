@@ -3,11 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Background from '../components/Background';
 import Input from '../components/Input';
 import BackIcon from '../assets/images/arrow-back.svg?react';
-import {
-  validateEmail,
-  validateNickname,
-  validatePassword,
-} from '../utils/validation';
+import { validateEmail, validateNickname, validatePassword } from '../utils/validation';
 import { Link } from 'react-router-dom';
 
 function SignUpPage() {
@@ -44,9 +40,7 @@ function SignUpPage() {
   const handleRepassChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setRePassword(value);
-    setRePasswordError(
-      password === value ? [] : ['비밀번호가 일치하지 않습니다!']
-    );
+    setRePasswordError(password === value ? [] : ['비밀번호가 일치하지 않습니다!']);
   };
 
   const handleSignup = async () => {
@@ -62,7 +56,12 @@ function SignUpPage() {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('회원가입 실패:', errorData);
-        alert(`회원가입 실패: ${errorData.message?.join(', ') || '서버 오류'}`);
+
+        const errorMessage = Array.isArray(errorData.message)
+          ? errorData.message.join(', ')
+          : errorData.message || '서버 오류';
+
+        alert(`회원가입 실패: ${errorMessage}`);
         return;
       }
 
@@ -85,15 +84,10 @@ function SignUpPage() {
           </Link>
           <span className="text-3xl mt-5">회원가입</span>
         </div>
-        <div className="text-gray-500 mt-4">
-          원할한 서비스 이용을 위해 회원가입을 해주세요.
-        </div>
+        <div className="text-gray-500 mt-4">원할한 서비스 이용을 위해 회원가입을 해주세요.</div>
         <div className="flex flex-col w-full max-w-md gap-2">
           <div className="mt-4">
-            <label
-              htmlFor="email"
-              className="text-base font-semibold text-gray-800 mt-4"
-            >
+            <label htmlFor="email" className="text-base font-semibold text-gray-800 mt-4">
               이메일
             </label>
             <Input
@@ -111,10 +105,7 @@ function SignUpPage() {
             ))}
           </div>
           <div className="mt-4">
-            <label
-              htmlFor="nickname"
-              className="text-base font-semibold text-gray-800 mt-4"
-            >
+            <label htmlFor="nickname" className="text-base font-semibold text-gray-800 mt-4">
               닉네임
             </label>
             <Input
@@ -132,10 +123,7 @@ function SignUpPage() {
             ))}
           </div>
           <div className="mt-4">
-            <label
-              htmlFor="password"
-              className="text-base font-semibold text-gray-800 mt-4"
-            >
+            <label htmlFor="password" className="text-base font-semibold text-gray-800 mt-4">
               비밀번호
             </label>
             <Input
