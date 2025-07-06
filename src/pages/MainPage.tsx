@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import Background from '../components/Background';
 import UserProfile from '../components/UserProfile';
+import StudyRoomModal from '../components/StudyRoomModal';
 
 function MainPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="relative min-h-screen bg-blue-400">
       <Background size="large">
@@ -16,6 +20,7 @@ function MainPage() {
         "
         >
           <button
+            onClick={() => setIsModalOpen(true)}
             className="
             bg-indigo-500 text-white px-6 py-2 rounded-full font-medium
             hover:bg-indigo-600 transition-colors
@@ -46,6 +51,8 @@ function MainPage() {
  bg-orange-50 mt-14 rounded-[40px] flex flex-col items-center justify-center-white"
         ></div>
       </Background>
+
+      <StudyRoomModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 }

@@ -40,12 +40,6 @@ function GoogleSignup() {
     }
   };
 
-  const handleNicknameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(e.target.value);
-    setNicknameAvailable(null);
-    setError('');
-  };
-
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 

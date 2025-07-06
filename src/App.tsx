@@ -5,7 +5,7 @@ import MainPage from './pages/MainPage';
 import SettingPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import RoomPage from './pages/RoomPage';
-import GoogleSignup from './pages/GoogleSignUp';
+import GoogleSignup from './pages/GoogleSignup';
 
 function App() {
   return (
