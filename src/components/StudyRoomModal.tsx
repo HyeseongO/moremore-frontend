@@ -76,7 +76,8 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
                 <label className="flex-1 cursor-pointer">
                   <input
                     type="radio"
-                    value="small"
+                    name="roomType"
+                    value="SMALL"
                     checked={data.roomType === 'SMALL'}
                     onChange={handleChange}
                     className="sr-only peer"
@@ -89,7 +90,8 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
                 <label className="flex-1 cursor-pointer">
                   <input
                     type="radio"
-                    value="large"
+                    name="roomType"
+                    value="LARGE"
                     checked={data.roomType === 'LARGE'}
                     onChange={handleChange}
                     className="sr-only peer"
