@@ -1,24 +1,41 @@
 import { useState } from 'react';
+import StudyRoomService from '../services/StudyRoomService';
 
 interface StudyRoomModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess: (roomData: any) => void;
 }
 
-function StudyRoomModal({ isOpen, onClose }: StudyRoomModalProps) {
+function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
   const [data, setData] = useState({
     title: '',
-    memberType: 'small',
+    roomType: 'SMALL' as 'SMALL' | 'LARGE',
     description: '',
   });
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = () => {
-    onClose();
-    setData({
-      title: '',
-      memberType: 'small',
-      description: '',
-    });
+  const handleSubmit = async () => {
+    if (!data.title.trim()) {
+      setError('스터디룸 제목을 입력해주세요.');
+      return;
+    }
+    setError(null);
+
+    try {
+      const roomData = await StudyRoomService.createStudyRoom(data);
+
+      onSuccess(roomData);
+      onClose();
+
+      setData({
+        title: '',
+        roomType: 'SMALL',
+        description: '',
+      });
+    } catch (error: any) {
+      setError(error.response?.data?.message || '스터디룸 생성에 실패했습니다.');
+    }
   };
 
   const handleChange = (event: any) => {
@@ -59,9 +76,8 @@ function StudyRoomModal({ isOpen, onClose }: StudyRoomModalProps) {
                 <label className="flex-1 cursor-pointer">
                   <input
                     type="radio"
-                    name="memberType"
                     value="small"
-                    checked={data.memberType === 'small'}
+                    checked={data.roomType === 'SMALL'}
                     onChange={handleChange}
                     className="sr-only peer"
                   />
@@ -73,9 +89,8 @@ function StudyRoomModal({ isOpen, onClose }: StudyRoomModalProps) {
                 <label className="flex-1 cursor-pointer">
                   <input
                     type="radio"
-                    name="memberType"
                     value="large"
-                    checked={data.memberType === 'large'}
+                    checked={data.roomType === 'LARGE'}
                     onChange={handleChange}
                     className="sr-only peer"
                   />
@@ -98,6 +113,8 @@ function StudyRoomModal({ isOpen, onClose }: StudyRoomModalProps) {
                 placeholder="스터디룸에 대한 설명을 입력해주세요!"
               />
             </div>
+
+            {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
 
             <div className="flex gap-3 pt-4">
               <button

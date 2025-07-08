@@ -16,7 +16,7 @@ function App() {
       <Route path="/main" element={<MainPage />} />
       <Route path="/main/settings" element={<SettingPage />} />
       <Route path="/main/profile" element={<ProfilePage />} />
-      <Route path="/main/romm/:roomId" element={<RoomPage />} />
+      <Route path="/studyroom/:roomId" element={<RoomPage />} />
     </Routes>
   );
 }
