@@ -7,6 +7,13 @@ import StudyRoomList from '../components/StudyRoomList';
 import { useNavigate } from 'react-router-dom';
 import type { MyStudyRoom, StudyRoomSuccessResponse } from '../types/studyroom.types';
 import StudyRoomService from '../services/studyroomService';
+import api from '../services/api';
+
+interface UserInfo {
+  id: number;
+  nickname: string;
+  profileImage?: string;
+}
 
 function MainPage() {
   const navigate = useNavigate();
@@ -16,10 +23,24 @@ function MainPage() {
   const [studyRooms, setStudyRooms] = useState<MyStudyRoom[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserInfo | null>(null);
 
   useEffect(() => {
+    fetchUserInfo();
     fetchMyStudyRooms();
   }, []);
+
+  const fetchUserInfo = async () => {
+    try {
+      const response = await api.get('/auth/me');
+
+      if (response.data.success && response.data.data.user) {
+        setCurrentUser(response.data.data.user);
+      }
+    } catch (error: any) {
+      console.error('사용자 정보 조회 실패:', error);
+    }
+  };
 
   const fetchMyStudyRooms = async () => {
     try {
@@ -60,7 +81,7 @@ function MainPage() {
     <div className="relative min-h-screen bg-blue-400">
       <Background size="large">
         <div className="absolute top-6 right-16">
-          <UserProfile />
+          <UserProfile user={currentUser} />
         </div>
         <div
           className="
