@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import StudyRoomService from '../services/StudyRoomService';
+import StudyRoomService from '../services/studyroomService';
 
 interface StudyRoomModalProps {
   isOpen: boolean;

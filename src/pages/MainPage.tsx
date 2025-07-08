@@ -6,7 +6,7 @@ import StudyRoomSuccessModal from '../components/StudyRoomSuccessModal';
 import StudyRoomList from '../components/StudyRoomList';
 import { useNavigate } from 'react-router-dom';
 import type { MyStudyRoom, StudyRoomSuccessResponse } from '../types/studyroom.types';
-import StudyRoomService from '../services/StudyRoomService';
+import StudyRoomService from '../services/studyroomService';
 
 function MainPage() {
   const navigate = useNavigate();
