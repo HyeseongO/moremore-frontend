@@ -6,6 +6,7 @@ import SettingPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import RoomPage from './pages/RoomPage';
 import GoogleSignup from './pages/GoogleSignup';
+import JoinStudyRoomPage from './pages/JoinStudyRoomPage';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/main/settings" element={<SettingPage />} />
       <Route path="/main/profile" element={<ProfilePage />} />
       <Route path="/studyroom/:roomId" element={<RoomPage />} />
+      <Route path="/studyroom/join/:inviteCode" element={<JoinStudyRoomPage />} />
     </Routes>
   );
 }

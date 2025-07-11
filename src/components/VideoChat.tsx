@@ -66,10 +66,21 @@ export const VideoChat: React.FC<VideoChatProps> = ({ roomId, userNickname = '??
                 <video
                   autoPlay
                   playsInline
+                  muted={false}
                   ref={(videoEl) => {
-                    if (videoEl && video.stream) videoEl.srcObject = video.stream;
+                    if (videoEl && video.stream) {
+                      if (videoEl.srcObject !== video.stream) {
+                        videoEl.srcObject = video.stream;
+                      }
+                    }
                   }}
                   className="w-full h-full object-cover"
+                  onLoadedMetadata={(e) => {
+                    console.log('Remote video loaded:', video.id);
+                    (e.target as HTMLVideoElement).play().catch((err) => {
+                      console.error('Error playing remote video:', err);
+                    });
+                  }}
                 />
               )}
 
