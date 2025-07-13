@@ -12,9 +12,10 @@ interface UseWebRTCResult {
   localVideoRef: React.RefObject<HTMLVideoElement | null>;
 }
 
-export const useWebRTC = (roomId: string): UseWebRTCResult => {
+export const useWebRTC = (roomId: string): UseWebRTCResult & { socket: Socket | null } => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remoteStreams, setRemoteStreams] = useState<Map<string, MediaStream>>(new Map());
+  const [socket, setSocket] = useState<Socket | null>(null);
 
   const localStreamRef = useRef<MediaStream | null>(null);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -89,6 +90,7 @@ export const useWebRTC = (roomId: string): UseWebRTCResult => {
       transports: ['websocket'],
     });
     socketRef.current = socket;
+    setSocket(socket);
 
     socket.on('connect', () => {
       console.log('[socket] connected:', socket.id);
@@ -126,5 +128,5 @@ export const useWebRTC = (roomId: string): UseWebRTCResult => {
     };
   }, [roomId]);
 
-  return { localStream, remoteStreams, localVideoRef };
+  return { localStream, remoteStreams, localVideoRef, socket };
 };

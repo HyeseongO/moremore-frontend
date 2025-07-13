@@ -1,9 +1,12 @@
 import { Link, useParams } from 'react-router-dom';
 import Background from '../components/Background';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { VideoChat } from '../components/VideoChat';
 import api from '../services/api';
 import type { StudyRoom } from '../types/studyroom.types';
+import { IoChatbubbleEllipses } from 'react-icons/io5';
+import { ChatSidebar } from '../components/ChatSidebar';
+import type { Socket } from 'socket.io-client';
 
 function RoomPage() {
   const { roomId } = useParams<{ roomId: string }>();
@@ -11,6 +14,14 @@ function RoomPage() {
   const [roomInfo, setRoomInfo] = useState<StudyRoom | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+  const handleSocketReady = useCallback((newSocket: Socket) => {
+    setSocket(newSocket);
+  }, []);
 
   useEffect(() => {
     if (roomId) {
@@ -24,7 +35,7 @@ function RoomPage() {
       const { data } = await api.get('/auth/me');
       if (data) {
         setUserNickname(data.nickname);
-        console.log(userNickname);
+        setUserId(data.id);
         return data.token;
       }
     } catch (error) {
@@ -107,9 +118,31 @@ function RoomPage() {
           </Link>
         </div>
 
+        <button
+          onClick={() => setIsChatOpen(!isChatOpen)}
+          className="fixed right-6 bottom-6 z-40 p-4 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 transition"
+        >
+          <IoChatbubbleEllipses size={24} />
+        </button>
+
         <div className="w-full h-full flex items-center justify-center">
-          <VideoChat roomId={roomId} userNickname={userNickname || '참가자'} />
+          <VideoChat
+            roomId={roomId}
+            userNickname={userNickname || '참가자'}
+            onSocketReady={handleSocketReady}
+          />
         </div>
+
+        {socket && (
+          <ChatSidebar
+            roomId={roomId}
+            socket={socket}
+            isOpen={isChatOpen}
+            onClose={() => setIsChatOpen(false)}
+            currentUserId={userId || 0}
+            currentUserNickname={userNickname}
+          />
+        )}
       </Background>
     </div>
   );

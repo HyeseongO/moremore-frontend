@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useWebRTC } from '../hooks/useWebRTC';
+import type { Socket } from 'socket.io-client';
 
 interface VideoChatProps {
   roomId: string;
   userNickname?: string;
+  onSocketReady?: (socket: Socket) => void;
 }
 
-export const VideoChat: React.FC<VideoChatProps> = ({ roomId, userNickname = '???' }) => {
-  const { localStream, remoteStreams, localVideoRef } = useWebRTC(roomId);
+export const VideoChat: React.FC<VideoChatProps> = ({
+  roomId,
+  userNickname = '???',
+  onSocketReady,
+}) => {
+  const { localStream, remoteStreams, localVideoRef, socket } = useWebRTC(roomId);
+
+  useEffect(() => {
+    if (socket && onSocketReady) {
+      onSocketReady(socket);
+    }
+  }, [socket, onSocketReady]);
 
   const totalUser = remoteStreams.size + 1;
 
