@@ -21,14 +21,7 @@ interface ChatSidebarProps {
   currentUserNickname: string;
 }
 
-export function ChatSidebar({
-  roomId,
-  socket,
-  isOpen,
-  onClose,
-  currentUserId,
-  currentUserNickname,
-}: ChatSidebarProps) {
+export function ChatSidebar({ roomId, socket, isOpen, onClose, currentUserId }: ChatSidebarProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);

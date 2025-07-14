@@ -81,8 +81,6 @@ export const useWebRTC = (roomId: string): UseWebRTCResult & { socket: Socket | 
   };
 
   useEffect(() => {
-    let mounted = true;
-
     initLocalMedia().catch(console.error);
 
     const socket = io('http://localhost:8000', {
@@ -120,7 +118,6 @@ export const useWebRTC = (roomId: string): UseWebRTCResult & { socket: Socket | 
     });
 
     return () => {
-      mounted = false;
       localStreamRef.current?.getTracks().forEach((t) => t.stop());
       peersRef.current.forEach(({ pc }) => pc.close());
       peersRef.current.clear();
