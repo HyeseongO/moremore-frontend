@@ -83,9 +83,11 @@ function RoomPage() {
   const fetchUserInfo = async () => {
     try {
       const { data } = await api.get('/auth/me');
-      if (data) {
-        setUserNickname(data.nickname);
-        setUserId(data.id);
+      const user = data.data.user;
+      if (user) {
+        setUserNickname(user.nickname);
+        setUserId(user.id);
+
         return data.token;
       }
     } catch (error) {
@@ -179,7 +181,7 @@ function RoomPage() {
         <div className="w-full h-full flex items-center justify-center">
           <VideoChat
             roomId={roomId}
-            userNickname={userNickname || '참가자'}
+            userNickname={userNickname}
             onSocketReady={handleSocketReady}
           />
         </div>
