@@ -8,11 +8,7 @@ interface VideoChatProps {
   onSocketReady?: (socket: Socket) => void;
 }
 
-export const VideoChat: React.FC<VideoChatProps> = ({
-  roomId,
-  userNickname = '???',
-  onSocketReady,
-}) => {
+export const VideoChat: React.FC<VideoChatProps> = ({ roomId, userNickname, onSocketReady }) => {
   const { localStream, remoteStreams, localVideoRef, socket } = useWebRTC(roomId);
 
   useEffect(() => {
