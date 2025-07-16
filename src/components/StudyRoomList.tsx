@@ -1,5 +1,6 @@
 import { Users, Crown, Calendar } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { io, type Socket } from 'socket.io-client';
 
 export interface StudyRoom {
@@ -23,15 +24,17 @@ export interface StudyRoom {
 interface StudyRoomListProps {
   rooms: StudyRoom[];
   onRoomClick?: (roomId: number) => void;
+  onDeleteRoom?: (roomId: number) => Promise<void>;
 }
 
 interface ActiveUsersMap {
   [roomId: number]: number;
 }
 
-function StudyRoomList({ rooms, onRoomClick }: StudyRoomListProps) {
+function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps) {
+  const navigate = useNavigate();
   const [activeUsersMap, setActiveUsersMap] = useState<ActiveUsersMap>({});
-  const [socket, setSocket] = useState<Socket | null>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     const token = document.cookie
@@ -45,6 +48,7 @@ function StudyRoomList({ rooms, onRoomClick }: StudyRoomListProps) {
       },
       transports: ['websocket'],
     });
+    socketRef.current = newSocket;
 
     newSocket.on('connect', () => {
       console.log('StudyRoomList socket connected');
@@ -68,12 +72,26 @@ function StudyRoomList({ rooms, onRoomClick }: StudyRoomListProps) {
       }));
     });
 
-    setSocket(newSocket);
-
     return () => {
       newSocket.disconnect();
     };
   }, [rooms]);
+
+  useEffect(() => {
+    const socket = socketRef.current;
+    if (!socket) return;
+
+    const handleRoomDeleted = () => {
+      alert('방이 삭제되었습니다.');
+      navigate('/main');
+    };
+
+    socket.on('room-deleted', handleRoomDeleted);
+
+    return () => {
+      socket.off('room-deleted', handleRoomDeleted);
+    };
+  }, [navigate]);
 
   if (rooms.length === 0) {
     return (
@@ -89,13 +107,28 @@ function StudyRoomList({ rooms, onRoomClick }: StudyRoomListProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
       {rooms.map((room) => {
         const activeUsers = activeUsersMap[room.id] || 0;
+        const isDeleted = room.myRole === 'OWNER' || room.myRole === 'ADMIN';
 
         return (
           <div
             key={room.id}
             onClick={() => onRoomClick?.(room.id)}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+            className="group relative bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
           >
+            {isDeleted && (
+              <button
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onDeleteRoom?.(room.id);
+                }}
+                className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center
+                     bg-rose-500 text-white text-xs font-bold opacity-0
+                     group-hover:opacity-100 hover:bg-rose-600 transition"
+                title="스터디룸 삭제"
+              >
+                ×
+              </button>
+            )}
             {room.myRole === 'OWNER' && (
               <div className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full mb-3">
                 <Crown size={12} />

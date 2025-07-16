@@ -77,6 +77,17 @@ function MainPage() {
     navigate(`/studyroom/${roomId}`);
   };
 
+  const handleDeleteRoom = async (roomId: number) => {
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    try {
+      await api.delete(`/studyrooms/${roomId}`);
+      await fetchMyStudyRooms();
+    } catch (error) {
+      alert('삭제 중 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-blue-400">
       <Background size="large">
@@ -138,7 +149,11 @@ function MainPage() {
               </div>
             </div>
           ) : (
-            <StudyRoomList rooms={studyRooms} onRoomClick={handleRoomClick} />
+            <StudyRoomList
+              rooms={studyRooms}
+              onRoomClick={handleRoomClick}
+              onDeleteRoom={handleDeleteRoom}
+            />
           )}
         </div>
       </Background>
