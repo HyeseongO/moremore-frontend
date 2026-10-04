@@ -53,7 +53,7 @@ function MainPage() {
       setError('스터디룸 목록을 불러오는데 실패했습니다.');
 
       if (error.response?.status === 401) {
-        navigate('/login');
+        navigate('/');
       }
     } finally {
       setIsLoading(false);

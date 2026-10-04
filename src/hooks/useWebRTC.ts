@@ -83,7 +83,7 @@ export const useWebRTC = (roomId: string): UseWebRTCResult & { socket: Socket | 
   useEffect(() => {
     initLocalMedia().catch(console.error);
 
-    const socket = io('http://localhost:8000', {
+    const socket = io(import.meta.env.VITE_API_URL, {
       withCredentials: true,
       transports: ['websocket'],
     });

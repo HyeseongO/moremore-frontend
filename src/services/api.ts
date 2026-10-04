@@ -19,7 +19,11 @@ api.interceptors.response.use(
 
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== '/auth/refresh'
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -27,7 +31,7 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         console.log('Refresh token failed:', refreshError);
-        window.location.href = '/login';
+        window.location.href = '/';
       }
     }
 
