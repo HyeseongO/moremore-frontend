@@ -90,7 +90,7 @@ export const useWebRTC = (
 
       setRemotePeers((prev) => {
         const m = new Map(prev);
-        const prevInfo = m.get(peerId) ?? { nickname: '참가자', profileImage: undefined };
+        const prevInfo = m.get(peerId) ?? { nickname: '', profileImage: undefined };
         m.set(peerId, { ...prevInfo, stream: remoteStream });
         return m;
       });

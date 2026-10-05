@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { IoSend, IoClose } from 'react-icons/io5';
 import { Socket } from 'socket.io-client';
 
@@ -22,6 +23,7 @@ interface ChatSidebarProps {
 }
 
 export function ChatSidebar({ roomId, socket, isOpen, onClose, currentUserId }: ChatSidebarProps) {
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -53,7 +55,7 @@ export function ChatSidebar({ roomId, socket, isOpen, onClose, currentUserId }: 
     });
 
     socket.on('error', ({ message }: { message: string }) => {
-      console.error('채팅 에러:', message);
+      console.error('Chat error:', message);
     });
 
     socket.emit('get-messages', { roomId, limit: 50 });
@@ -118,8 +120,11 @@ export function ChatSidebar({ roomId, socket, isOpen, onClose, currentUserId }: 
         w-96 h-[600px] flex flex-col overflow-hidden`}
       >
         <div className="flex items-center justify-between p-4 border-b bg-white rounded-t-2xl">
-          <h3 className="font-semibold text-lg text-gray-800">채팅</h3>
-          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-full transition">
+          <h3 className="font-semibold text-lg text-gray-800">{t('chat.title')}</h3>
+          <button
+            onClick={onClose}
+            aria-label={t('chat.close')}
+            className="p-1.5 hover:bg-gray-100 rounded-full transition">
             <IoClose size={20} className="text-gray-600" />
           </button>
         </div>
@@ -127,7 +132,7 @@ export function ChatSidebar({ roomId, socket, isOpen, onClose, currentUserId }: 
         <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
           {messages.length === 0 ? (
             <div className="text-center text-gray-500 py-8">
-              아직 메시지가 없습니다. 대화를 시작해보세요!
+              {t('chat.empty')}
             </div>
           ) : (
             messages.map((message) => (
@@ -151,7 +156,7 @@ export function ChatSidebar({ roomId, socket, isOpen, onClose, currentUserId }: 
                   )}
                   <p className="text-sm break-words">{message.content}</p>
                   <p className="text-xs mt-1 opacity-70">
-                    {new Date(message.createdAt).toLocaleTimeString('ko-KR', {
+                    {new Date(message.createdAt).toLocaleTimeString(i18n.resolvedLanguage, {
                       hour: '2-digit',
                       minute: '2-digit',
                     })}
@@ -163,7 +168,7 @@ export function ChatSidebar({ roomId, socket, isOpen, onClose, currentUserId }: 
 
           {typingUsers.length > 0 && (
             <div className="text-sm text-gray-500 italic px-2">
-              {typingUsers.join(', ')}님이 입력 중...
+              {t('chat.typing', { names: typingUsers.join(', '), count: typingUsers.length })}
             </div>
           )}
 
@@ -176,12 +181,13 @@ export function ChatSidebar({ roomId, socket, isOpen, onClose, currentUserId }: 
               type="text"
               value={inputMessage}
               onChange={handleInputChange}
-              placeholder="메시지를 입력하세요..."
+              placeholder={t('chat.placeholder')}
               className="flex-1 px-4 py-2.5 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
             />
             <button
               type="submit"
               disabled={!inputMessage.trim()}
+              aria-label={t('chat.send')}
               className="p-2.5 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               <IoSend size={18} />

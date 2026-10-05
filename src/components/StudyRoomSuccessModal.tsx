@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle, X } from 'lucide-react';
 
 interface StudyRoomSuccessModalProps {
@@ -15,6 +16,7 @@ interface StudyRoomSuccessModalProps {
 }
 
 function StudyRoomSuccessModal({ isOpen, onClose, roomData }: StudyRoomSuccessModalProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
@@ -35,6 +37,7 @@ function StudyRoomSuccessModal({ isOpen, onClose, roomData }: StudyRoomSuccessMo
         <div className="bg-white rounded-2xl p-8 w-[450px] max-w-[90vw] shadow-2xl relative">
           <button
             onClick={onClose}
+            aria-label={t('roomCreated.close')}
             className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
           >
             <X size={24} />
@@ -46,28 +49,28 @@ function StudyRoomSuccessModal({ isOpen, onClose, roomData }: StudyRoomSuccessMo
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-center mb-2">스터디룸이 생성되었습니다!</h2>
-          <p className="text-gray-600 text-center mb-6">이제 친구들을 초대해보세요</p>
+          <h2 className="text-2xl font-bold text-center mb-2">{t('roomCreated.title')}</h2>
+          <p className="text-gray-600 text-center mb-6">{t('roomCreated.subtitle')}</p>
 
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <h3 className="font-semibold text-lg mb-3">{roomData.title}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">참여 인원</span>
-                <span className="font-medium">1 / {roomData.maxMembers}명</span>
+                <span className="text-gray-600">{t('roomCreated.members')}</span>
+                <span className="font-medium">
+                  {t('roomCreated.memberCount', { current: 1, max: roomData.maxMembers })}
+                </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">스터디룸 타입</span>
-                <span className="font-medium">
-                  {roomData.roomType === 'SMALL' ? '소규모' : '대규모'}
-                </span>
+                <span className="text-gray-600">{t('roomCreated.roomType')}</span>
+                <span className="font-medium">{t(`roomType.${roomData.roomType}`)}</span>
               </div>
             </div>
           </div>
 
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-2 mb-2">
-              <span className="font-medium text-gray-700">초대 링크</span>
+              <span className="font-medium text-gray-700">{t('roomCreated.inviteLink')}</span>
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -84,11 +87,11 @@ function StudyRoomSuccessModal({ isOpen, onClose, roomData }: StudyRoomSuccessMo
                     : 'bg-indigo-600 text-white hover:bg-indigo-700'
                 }`}
               >
-                {copied ? '복사됨!' : '복사'}
+                {copied ? t('roomCreated.copied') : t('roomCreated.copy')}
               </button>
             </div>
             <p className="text-xs text-gray-500 mt-2">
-              * 이 링크를 통해 친구들이 스터디룸에 참여할 수 있습니다
+              {t('roomCreated.inviteHint')}
             </p>
           </div>
 
@@ -96,7 +99,7 @@ function StudyRoomSuccessModal({ isOpen, onClose, roomData }: StudyRoomSuccessMo
             onClick={onClose}
             className="w-full px-4 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
           >
-            확인
+            {t('common.confirm')}
           </button>
         </div>
       </div>

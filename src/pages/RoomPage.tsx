@@ -1,4 +1,5 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Background from '../components/Background';
 import { useCallback, useEffect, useState } from 'react';
 import api from '../services/api';
@@ -8,8 +9,10 @@ import { ChatSidebar } from '../components/ChatSidebar';
 import type { Socket } from 'socket.io-client';
 import AudioChat from '../components/media/AudioChat';
 import { VideoChat } from '../components/VideoChat';
+import LanguageToggle from '../components/LanguageToggle';
 
 function RoomPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
   const [userNickname, setUserNickname] = useState('');
@@ -76,7 +79,7 @@ function RoomPage() {
         return data.token;
       }
     } catch (error) {
-      console.error('사용자 정보 조회 실패:', error);
+      console.error('Failed to fetch user info:', error);
     }
   };
 
@@ -88,11 +91,11 @@ function RoomPage() {
         setRoomInfo(data);
         setRoomMode(data.roomType === 'SMALL' ? 'small' : 'large');
       } else {
-        setError('존재하지 않는 스터디룸 입니다.');
+        setError('room.notFound');
       }
     } catch (error) {
-      console.error('스터디룸 정보 조회 실패:', error);
-      setError('스터디룸 정보를 불러올 수 없습니다.');
+      console.error('Failed to fetch study room:', error);
+      setError('room.loadFailed');
     } finally {
       setLoading(false);
     }
@@ -105,7 +108,7 @@ function RoomPage() {
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-700 mx-auto"></div>
-              <p className="mt-4 text-gray-600">스터디룸에 접속 중...</p>
+              <p className="mt-4 text-gray-600">{t('room.connecting')}</p>
             </div>
           </div>
         </Background>
@@ -120,13 +123,13 @@ function RoomPage() {
           <div className="flex items-center justify-center h-full">
             <div className="text-center bg-white p-8 rounded-lg shadow-lg">
               <h2 className="text-2xl font-bold mb-4 text-red-600">
-                {error || '존재하지 않는 스터디룸입니다'}
+                {t(error ?? 'room.notFound')}
               </h2>
               <Link
                 to="/main"
                 className="inline-block px-6 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
               >
-                메인으로 돌아가기
+                {t('room.backToMain')}
               </Link>
             </div>
           </div>
@@ -142,23 +145,27 @@ function RoomPage() {
           <div className="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow-lg">
             <h2 className="text-xl font-bold text-gray-800">{roomInfo.title}</h2>
             <p className="text-sm text-gray-600">
-              현재 접속자: {activeUsersCount}명 / {roomInfo.maxMembers}명
+              {t('room.onlineCount', { current: activeUsersCount, max: roomInfo.maxMembers })}
             </p>
-            <p className="text-xs text-gray-500">(전체 멤버: {roomInfo._count?.members || 0}명)</p>
+            <p className="text-xs text-gray-500">
+              {t('room.totalMembers', { count: roomInfo._count?.members || 0 })}
+            </p>
           </div>
         </div>
 
-        <div className="absolute top-6 right-16 z-10">
+        <div className="absolute top-6 right-16 z-10 flex items-center gap-3">
+          <LanguageToggle inline />
           <button
             onClick={() => navigate('/main')}
             className="px-8 py-1.5 rounded-lg bg-rose-200 hover:bg-rose-300 text-rose-800 font-medium"
           >
-            나가기
+            {t('room.leave')}
           </button>
         </div>
 
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
+          aria-label={t('chat.open')}
           className="fixed right-6 bottom-6 z-40 p-4 bg-indigo-500 text-white rounded-full shadow-lg hover:bg-indigo-600 transition"
         >
           <IoChatbubbleEllipses size={24} />

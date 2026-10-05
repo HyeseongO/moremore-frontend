@@ -1,12 +1,14 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import { useTranslation } from 'react-i18next';
 import StudyRoomService from '../services/studyroomService';
 
 function JoinStudyRoomPage() {
   const { inviteCode } = useParams<{ inviteCode: string }>();
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const [msg, setMsg] = useState('스터디룸에 참가 중...');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const requestedRef = useRef(false);
 
   useEffect(() => {
@@ -19,15 +21,15 @@ function JoinStudyRoomPage() {
         navigate(`/studyroom/${room.id}`, { replace: true });
       } catch (err) {
         const message = axios.isAxiosError(err) ? err.response?.data?.message : undefined;
-        setMsg(message || '유효하지 않은 초대 코드입니다.');
+        setErrorMessage(message || t('joinRoom.invalidCode'));
       }
     };
     joinRoom();
-  }, [inviteCode, navigate]);
+  }, [inviteCode, navigate, t]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-amber-100">
-      <p className="text-lg font-medium">{msg}</p>
+      <p className="text-lg font-medium">{errorMessage ?? t('joinRoom.joining')}</p>
     </div>
   );
 }

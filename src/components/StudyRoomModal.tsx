@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import StudyRoomService from '../services/studyroomService';
 
 interface StudyRoomModalProps {
@@ -8,6 +9,7 @@ interface StudyRoomModalProps {
 }
 
 function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
+  const { t } = useTranslation();
   const [data, setData] = useState({
     title: '',
     roomType: 'SMALL' as 'SMALL' | 'LARGE',
@@ -27,7 +29,7 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
 
   const handleSubmit = async () => {
     if (!data.title.trim()) {
-      setError('스터디룸 제목을 입력해주세요.');
+      setError(t('createRoom.titleRequired'));
       return;
     }
     setError(null);
@@ -38,7 +40,7 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
       onSuccess(roomData);
       handleClose();
     } catch (error: any) {
-      setError(error.response?.data?.message || '스터디룸 생성에 실패했습니다.');
+      setError(error.response?.data?.message || t('createRoom.failed'));
     }
   };
 
@@ -58,11 +60,11 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
 
       <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
         <div className="bg-white rounded-2xl p-8 w-[500px] max-w-[90vw] shadow-2xl pointer-events-auto">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">스터디룸 생성</h2>
+          <h2 className="text-2xl font-bold mb-6 text-gray-800">{t('createRoom.title')}</h2>
 
           <div className="space-y-5">
             <div>
-              <div className="block text-sm font-medium text-gray-700 mb-2">스터디룸 제목</div>
+              <div className="block text-sm font-medium text-gray-700 mb-2">{t('createRoom.titleLabel')}</div>
               <input
                 type="text"
                 name="title"
@@ -70,12 +72,12 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                placeholder="예: 바닐라코딩 19기 정기 모임"
+                placeholder={t('createRoom.titlePlaceholder')}
               />
             </div>
 
             <div>
-              <div className="block text-sm font-medium text-gray-700 mb-2">인원 규모</div>
+              <div className="block text-sm font-medium text-gray-700 mb-2">{t('createRoom.sizeLabel')}</div>
               <div className="flex gap-4">
                 <label className="flex-1 cursor-pointer">
                   <input
@@ -87,8 +89,8 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
                     className="sr-only peer"
                   />
                   <div className="border-2 border-gray-300 rounded-lg p-4 text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition">
-                    <div className="font-medium text-gray-800">소규모</div>
-                    <div className="text-sm text-gray-600">최대 4명</div>
+                    <div className="font-medium text-gray-800">{t('roomType.SMALL')}</div>
+                    <div className="text-sm text-gray-600">{t('createRoom.maxMembers', { count: 4 })}</div>
                   </div>
                 </label>
                 <label className="flex-1 cursor-pointer">
@@ -101,22 +103,22 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
                     className="sr-only peer"
                   />
                   <div className="border-2 border-gray-300 rounded-lg p-4 text-center peer-checked:border-indigo-500 peer-checked:bg-indigo-50 transition">
-                    <div className="font-medium text-gray-800">대규모</div>
-                    <div className="text-sm text-gray-600">최대 12명</div>
+                    <div className="font-medium text-gray-800">{t('roomType.LARGE')}</div>
+                    <div className="text-sm text-gray-600">{t('createRoom.maxMembers', { count: 12 })}</div>
                   </div>
                 </label>
               </div>
             </div>
 
             <div>
-              <div className="block text-sm font-medium text-gray-700 mb-2">세부 사항</div>
+              <div className="block text-sm font-medium text-gray-700 mb-2">{t('createRoom.descriptionLabel')}</div>
               <textarea
                 name="description"
                 value={data.description}
                 onChange={handleChange}
                 rows={4}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-none"
-                placeholder="스터디룸에 대한 설명을 입력해주세요!"
+                placeholder={t('createRoom.descriptionPlaceholder')}
               />
             </div>
 
@@ -127,13 +129,13 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
                 onClick={handleClose}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
               >
-                취소
+                {t('common.cancel')}
               </button>
               <button
                 onClick={handleSubmit}
                 className="flex-1 px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
               >
-                생성하기
+                {t('createRoom.submit')}
               </button>
             </div>
           </div>

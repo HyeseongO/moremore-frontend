@@ -1,5 +1,6 @@
 import { Users, Crown, Calendar } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { type Socket } from 'socket.io-client';
 import { createSocket } from '../services/socket';
@@ -33,6 +34,7 @@ interface ActiveUsersMap {
 }
 
 function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps) {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const socketRef = useRef<Socket | null>(null);
   const [activeUsersMap, setActiveUsersMap] = useState<ActiveUsersMap>({});
@@ -71,7 +73,7 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
     if (!socket) return;
 
     const handleRoomDeleted = () => {
-      alert('방이 삭제되었습니다.');
+      alert(t('roomList.roomDeleted'));
       navigate('/main');
     };
 
@@ -80,14 +82,14 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
     return () => {
       socket.off('room-deleted', handleRoomDeleted);
     };
-  }, [navigate]);
+  }, [navigate, t]);
 
   if (rooms.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full py-20 text-gray-500">
         <div className="text-6xl mb-4">📚</div>
-        <p className="text-xl font-medium mb-2">아직 참여한 스터디룸이 없습니다</p>
-        <p className="text-gray-400">스터디룸을 생성하거나 초대 링크로 참여해보세요!</p>
+        <p className="text-xl font-medium mb-2">{t('roomList.emptyTitle')}</p>
+        <p className="text-gray-400">{t('roomList.emptyHint')}</p>
       </div>
     );
   }
@@ -113,7 +115,8 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
                 className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center
                      bg-rose-500 text-white text-xs font-bold opacity-0
                      group-hover:opacity-100 hover:bg-rose-600 transition"
-                title="스터디룸 삭제"
+                title={t('roomList.deleteRoom')}
+                aria-label={t('roomList.deleteRoom')}
               >
                 ×
               </button>
@@ -121,7 +124,7 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
             {room.myRole === 'OWNER' && (
               <div className="inline-flex items-center gap-1 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full mb-3">
                 <Crown size={12} />
-                <span>방장</span>
+                <span>{t('roomList.owner')}</span>
               </div>
             )}
 
@@ -135,12 +138,12 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2 text-gray-600">
                   <Users size={16} />
-                  <span>참여 현황</span>
+                  <span>{t('roomList.activeUsers')}</span>
                 </div>
                 <span
                   className={`font-medium ${activeUsers > 0 ? 'text-green-600' : 'text-gray-800'}`}
                 >
-                  {activeUsers}/{room.maxMembers}명
+                  {t('roomList.activeCount', { current: activeUsers, max: room.maxMembers })}
                 </span>
               </div>
 
@@ -151,20 +154,20 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
                       room.roomType === 'SMALL' ? 'bg-blue-500' : 'bg-purple-500'
                     }`}
                   />
-                  <span>규모</span>
+                  <span>{t('roomList.size')}</span>
                 </div>
                 <span className="font-medium text-gray-800">
-                  {room.roomType === 'SMALL' ? '소규모' : '대규모'}
+                  {t(`roomType.${room.roomType}`)}
                 </span>
               </div>
 
               <div className="flex items-center justify-between text-sm">
                 <div className="flex items-center gap-2 text-gray-600">
                   <Calendar size={16} />
-                  <span>생성일</span>
+                  <span>{t('roomList.createdAt')}</span>
                 </div>
                 <span className="font-medium text-gray-800">
-                  {new Date(room.createdAt).toLocaleDateString()}
+                  {new Date(room.createdAt).toLocaleDateString(i18n.resolvedLanguage)}
                 </span>
               </div>
             </div>
@@ -185,7 +188,7 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
                   )}
                 </div>
                 <div>
-                  <p className="text-xs text-gray-500">방장</p>
+                  <p className="text-xs text-gray-500">{t('roomList.owner')}</p>
                   <p className="text-sm font-medium text-gray-800">{room.owner.nickname}</p>
                 </div>
               </div>
@@ -202,7 +205,7 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
                 onRoomClick?.(room.id);
               }}
             >
-              {activeUsers > 0 ? '입장하기 (접속 중)' : '입장하기'}
+              {activeUsers > 0 ? t('roomList.enterActive') : t('roomList.enter')}
             </button>
           </div>
         );

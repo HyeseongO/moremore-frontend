@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWebRTC } from '../../hooks/useWebRTC';
 import { ParticipantTile } from './ParticipantTile';
 import type { Socket } from 'socket.io-client';
@@ -10,6 +11,7 @@ interface AudioChatProps {
 }
 
 export default function AudioChat({ roomId, userNickname, onSocketReady }: AudioChatProps) {
+  const { t } = useTranslation();
   const { remotePeers, socket } = useWebRTC(roomId, 'large');
 
   useEffect(() => {
@@ -24,7 +26,12 @@ export default function AudioChat({ roomId, userNickname, onSocketReady }: Audio
     isLocal: boolean;
   }[] = [
     { id: 'local', nickname: userNickname, isLocal: true },
-    ...Array.from(remotePeers.entries()).map(([id, p]) => ({ id, ...p, isLocal: false })),
+    ...Array.from(remotePeers.entries()).map(([id, p]) => ({
+      id,
+      ...p,
+      nickname: p.nickname || t('room.participant'),
+      isLocal: false,
+    })),
   ];
 
   return (

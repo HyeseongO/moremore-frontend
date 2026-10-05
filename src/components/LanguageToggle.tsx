@@ -1,7 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LANGUAGES } from '../i18n';
 
-function LanguageToggle() {
+interface LanguageToggleProps {
+  inline?: boolean;
+}
+
+function LanguageToggle({ inline = false }: LanguageToggleProps) {
   const { t, i18n } = useTranslation();
   const current = i18n.resolvedLanguage;
 
@@ -9,7 +13,9 @@ function LanguageToggle() {
     <div
       role="group"
       aria-label={t('language.label')}
-      className="fixed right-4 top-4 z-50 flex overflow-hidden rounded-full bg-white/90 text-sm shadow"
+      className={`${
+        inline ? 'shrink-0' : 'fixed right-4 top-4 z-50'
+      } flex overflow-hidden rounded-full bg-white/90 text-sm shadow`}
     >
       {SUPPORTED_LANGUAGES.map((language) => (
         <button

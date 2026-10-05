@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWebRTC } from '../hooks/useWebRTC';
 import type { Socket } from 'socket.io-client';
 
@@ -15,6 +16,7 @@ export const VideoChat: React.FC<VideoChatProps> = ({
   userNickname,
   onSocketReady,
 }: VideoChatProps) => {
+  const { t } = useTranslation();
   const { localStream, remotePeers, localVideoRef, socket } = useWebRTC(roomId, roomMode);
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export const VideoChat: React.FC<VideoChatProps> = ({
     ...Array.from(remotePeers.entries()).map(([peerId, info], index) => ({
       id: peerId,
       stream: info.stream,
-      label: info.nickname ?? `참가자 ${index + 1}`,
+      label: info.nickname || t('room.participantNumbered', { number: index + 1 }),
       isLocal: false,
     })),
   ];
@@ -107,7 +109,7 @@ export const VideoChat: React.FC<VideoChatProps> = ({
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-700 mx-auto mb-4"></div>
-                    <p className="text-gray-600">카메라 연결 중...</p>
+                    <p className="text-gray-600">{t('room.connectingCamera')}</p>
                   </div>
                 </div>
               )}
