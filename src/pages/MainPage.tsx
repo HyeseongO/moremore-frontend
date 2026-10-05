@@ -3,6 +3,7 @@ import Background from '../components/Background';
 import UserProfile from '../components/UserProfile';
 import StudyRoomModal from '../components/StudyRoomModal';
 import StudyRoomSuccessModal from '../components/StudyRoomSuccessModal';
+import JoinByInviteModal from '../components/JoinByInviteModal';
 import StudyRoomList from '../components/StudyRoomList';
 import { useNavigate } from 'react-router-dom';
 import type { MyStudyRoom, StudyRoomSuccessResponse } from '../types/studyroom.types';
@@ -19,6 +20,7 @@ function MainPage() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [createdRoom, setCreatedRoom] = useState<StudyRoomSuccessResponse | null>(null);
   const [studyRooms, setStudyRooms] = useState<MyStudyRoom[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -101,15 +103,26 @@ function MainPage() {
           flex items-center justify-between
         "
         >
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="
-            bg-indigo-500 text-white px-6 py-2 rounded-full font-medium
-            hover:bg-indigo-600 transition-colors
-          "
-          >
-            스터디룸 생성
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="
+              bg-indigo-500 text-white px-6 py-2 rounded-full font-medium
+              hover:bg-indigo-600 transition-colors
+            "
+            >
+              스터디룸 생성
+            </button>
+            <button
+              onClick={() => setIsJoinModalOpen(true)}
+              className="
+              border-2 border-indigo-500 text-indigo-600 bg-white px-6 py-1.5 rounded-full font-medium
+              hover:bg-indigo-50 transition-colors
+            "
+            >
+              초대 코드로 참여
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <input
               type="text"
@@ -167,6 +180,11 @@ function MainPage() {
         isOpen={isSuccessModalOpen}
         onClose={() => setIsSuccessModalOpen(false)}
         roomData={createdRoom}
+      />
+      <JoinByInviteModal
+        isOpen={isJoinModalOpen}
+        onClose={() => setIsJoinModalOpen(false)}
+        onSuccess={fetchMyStudyRooms}
       />
     </div>
   );
