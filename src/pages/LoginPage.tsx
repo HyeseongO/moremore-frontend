@@ -1,5 +1,6 @@
 import Background from '../components/Background';
-import WelcomeImage from '../assets/images/welcomeImage.svg?react';
+import welcomeAvif from '../assets/images/welcome.avif';
+import welcomeJpg from '../assets/images/welcome.jpg';
 import MoremoreOnImage from '../assets/images/moremoreOn.svg?react';
 import GoogleSignUp from '../assets/images/signup-google.svg?react';
 import Input from '../components/Input';
@@ -76,7 +77,17 @@ function LoginPage() {
     <div className="relative min-h-screen bg-blue-400">
       <LanguageToggle />
       <Background size="medium">
-        <WelcomeImage className="w-44 h-44 mx-auto mb-3 mt-3" />
+        <picture>
+          <source srcSet={welcomeAvif} type="image/avif" />
+          <img
+            src={welcomeJpg}
+            alt={t('login.welcomeImageAlt')}
+            width={176}
+            height={176}
+            fetchPriority="high"
+            className="w-44 h-44 mx-auto mb-3 mt-3 rounded-full"
+          />
+        </picture>
         <MoremoreOnImage />
         <div className="mb-5" />
         <div className="w-64 mx-auto">

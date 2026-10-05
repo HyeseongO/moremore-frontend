@@ -14,6 +14,7 @@ const ko = {
   },
   login: {
     submit: '로그인',
+    welcomeImageAlt: '모어모어온 환영 그림',
     or: 'Or',
     invalidEmail: '유효하지 않은 이메일 형식입니다.',
     invalidPassword: '잘못된 비밀번호 형식입니다.',

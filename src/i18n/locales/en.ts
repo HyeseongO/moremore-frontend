@@ -16,6 +16,7 @@ const en: Messages = {
   },
   login: {
     submit: 'Log in',
+    welcomeImageAlt: 'Moremore On welcome illustration',
     or: 'Or',
     invalidEmail: 'Please enter a valid email address.',
     invalidPassword: 'Password must be at least 8 characters.',
