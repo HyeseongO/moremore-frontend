@@ -15,6 +15,16 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
   });
   const [error, setError] = useState<string | null>(null);
 
+  const handleClose = () => {
+    setData({
+      title: '',
+      roomType: 'SMALL',
+      description: '',
+    });
+    setError(null);
+    onClose();
+  };
+
   const handleSubmit = async () => {
     if (!data.title.trim()) {
       setError('스터디룸 제목을 입력해주세요.');
@@ -26,13 +36,7 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
       const roomData = await StudyRoomService.createStudyRoom(data);
 
       onSuccess(roomData);
-      onClose();
-
-      setData({
-        title: '',
-        roomType: 'SMALL',
-        description: '',
-      });
+      handleClose();
     } catch (error: any) {
       setError(error.response?.data?.message || '스터디룸 생성에 실패했습니다.');
     }
@@ -50,10 +54,10 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={onClose} />
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={handleClose} />
 
-      <div className="fixed inset-0 flex items-center justify-center z-50">
-        <div className="bg-white rounded-2xl p-8 w-[500px] max-w-[90vw] shadow-2xl">
+      <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+        <div className="bg-white rounded-2xl p-8 w-[500px] max-w-[90vw] shadow-2xl pointer-events-auto">
           <h2 className="text-2xl font-bold mb-6 text-gray-800">스터디룸 생성</h2>
 
           <div className="space-y-5">
@@ -120,7 +124,7 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
 
             <div className="flex gap-3 pt-4">
               <button
-                onClick={onClose}
+                onClick={handleClose}
                 className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
               >
                 취소

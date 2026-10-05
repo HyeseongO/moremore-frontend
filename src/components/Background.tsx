@@ -14,7 +14,7 @@ const sizeClasses = {
 function Background({ children, size = 'medium' }: BackgroundProps) {
   return (
     <div
-      className={`mx-auto ${sizeClasses[size]} absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+      className={`mx-auto ${sizeClasses[size]} max-w-[calc(100vw-2rem)] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
  bg-white rounded-[60px] shadow-lg flex flex-col items-center justify-center-white`}
     >
       {children}
