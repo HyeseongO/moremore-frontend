@@ -1,3 +1,8 @@
+const SPECIAL_CHARS = '!-\\/:-@\\[-`{-~';
+const SPECIAL_CHAR = new RegExp(`[${SPECIAL_CHARS}]`);
+const NICKNAME_CHARS = new RegExp(`^[A-Za-z0-9가-힣${SPECIAL_CHARS}]+$`);
+const PASSWORD_CHARS = new RegExp(`^[A-Za-z0-9${SPECIAL_CHARS}]*$`);
+
 export const validateEmail = (email: string): string[] => {
   const errors: string[] = [];
 
@@ -38,13 +43,11 @@ export const validateNickname = (nickname: string): string[] => {
     errors.push('닉네임에 공백을 포함할 수 없습니다!');
   }
 
-  if (/^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]/.test(nickname)) {
+  if (!/^[A-Za-z0-9가-힣]/.test(nickname)) {
     errors.push('닉네임은 특수문자로 시작할 수 없습니다!');
   }
 
-  const nicknameRegex =
-    /^[가-힣a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]+$/;
-  if (!nicknameRegex.test(nickname)) {
+  if (!NICKNAME_CHARS.test(nickname)) {
     errors.push('닉네임은 한글, 영어, 숫자, 특수문자만 사용 가능합니다!');
   }
 
@@ -67,11 +70,13 @@ export const validatePassword = (password: string): string[] => {
     errors.push('비밀번호는 최소 8자 이상 최대 20자 이하여야 합니다!');
   }
 
+  if (!PASSWORD_CHARS.test(password.replace(/ /g, ''))) {
+    errors.push('비밀번호에는 영문, 숫자, 특수문자만 사용할 수 있습니다!');
+  }
+
   const hasLetter = /[a-zA-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
-  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\-+=~`[\]\\\/';]/.test(
-    password
-  );
+  const hasSpecialChar = SPECIAL_CHAR.test(password);
 
   if (!hasLetter) {
     errors.push('비밀번호에는 최소 1개의 영문자가 포함되어야 합니다!');
