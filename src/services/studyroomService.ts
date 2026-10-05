@@ -40,7 +40,7 @@ class StudyRoomService {
     return response.data;
   }
 
-  async joinByInviteCode(inviteCode: string): Promise<StudyRoom> {
+  async joinByInviteCode(inviteCode: string): Promise<StudyRoom & { alreadyMember: boolean }> {
     const response = await api.post(`/studyrooms/join/${inviteCode}`);
     return response.data;
   }

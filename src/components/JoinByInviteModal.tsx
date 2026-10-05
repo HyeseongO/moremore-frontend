@@ -17,11 +17,13 @@ const extractInviteCode = (value: string) => {
 function JoinByInviteModal({ isOpen, onClose, onSuccess }: JoinByInviteModalProps) {
   const [value, setValue] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
     setValue('');
     setError(null);
+    setNotice(null);
     onClose();
   };
 
@@ -36,9 +38,14 @@ function JoinByInviteModal({ isOpen, onClose, onSuccess }: JoinByInviteModalProp
     }
 
     setError(null);
+    setNotice(null);
     setIsSubmitting(true);
     try {
-      await StudyRoomService.joinByInviteCode(encodeURIComponent(inviteCode));
+      const room = await StudyRoomService.joinByInviteCode(encodeURIComponent(inviteCode));
+      if (room.alreadyMember) {
+        setNotice(`이미 참여중인 스터디룸이에요. (${room.title})`);
+        return;
+      }
       onSuccess();
       handleClose();
     } catch (err) {
@@ -73,6 +80,7 @@ function JoinByInviteModal({ isOpen, onClose, onSuccess }: JoinByInviteModalProp
           />
 
           {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+          {notice && <p className="mt-3 text-sm text-indigo-600">{notice}</p>}
 
           <div className="flex gap-3 pt-6">
             <button
