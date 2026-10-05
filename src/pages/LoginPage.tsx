@@ -123,6 +123,9 @@ function LoginPage() {
             회원가입
           </Link>
         </div>
+        <Link to="/privacy" className="mt-2 text-xs text-gray-400 hover:underline">
+          개인정보처리방침
+        </Link>
       </Background>
     </div>
   );
