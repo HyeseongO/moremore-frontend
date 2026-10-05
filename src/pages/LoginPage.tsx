@@ -5,9 +5,15 @@ import GoogleSignUp from '../assets/images/signup-google.svg?react';
 import Input from '../components/Input';
 import { API_URL } from '../services/api';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+
+const LOGIN_ERROR_MESSAGES: Record<string, string> = {
+  google_login_failed: '구글 로그인이 취소되었거나 실패했습니다. 다시 시도해주세요.',
+};
 
 function LoginPage() {
+  const [searchParams] = useSearchParams();
+  const loginErrorMessage = LOGIN_ERROR_MESSAGES[searchParams.get('error') ?? ''];
   const [emailValue, setEmailValue] = useState('');
   const [isEmailValid, setEmailValid] = useState(false);
   const [passwordValue, setPasswordValue] = useState('');
@@ -105,6 +111,11 @@ function LoginPage() {
           <button onClick={handleGoogleLogin} className="block mx-auto -mt-6">
             <GoogleSignUp />
           </button>
+          {loginErrorMessage && (
+            <p role="alert" className="mt-3 text-sm text-center text-red-600 break-keep">
+              {loginErrorMessage}
+            </p>
+          )}
         </div>
         <div className="text-center mt-4">
           <span className="text-gray-600">아직 모어모어온 회원이 아니신가요? </span>
