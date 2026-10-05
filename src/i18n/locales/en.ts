@@ -156,6 +156,14 @@ const en: Messages = {
     participant: 'Participant',
     participantNumbered: 'Participant {{number}}',
     connectingCamera: 'Connecting camera...',
+    controls: {
+      label: 'Microphone and camera controls',
+      muteMic: 'Mute microphone',
+      unmuteMic: 'Unmute microphone',
+      cameraOff: 'Turn off camera',
+      cameraOn: 'Turn on camera',
+      mutedIndicator: 'Microphone off',
+    },
   },
   chat: {
     title: 'Chat',

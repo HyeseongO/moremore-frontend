@@ -13,13 +13,21 @@ interface UseWebRTCResult {
   localStream: MediaStream | null;
   remotePeers: Map<string, RemotePeerInfo>;
   localVideoRef: React.RefObject<HTMLVideoElement | null>;
+  isAudioEnabled: boolean;
+  isVideoEnabled: boolean;
+  toggleAudio: () => void;
+  toggleVideo: () => void;
 }
 
 export interface RemotePeerInfo {
   stream?: MediaStream;
   nickname: string;
   profileImage?: string;
+  audioEnabled?: boolean;
+  videoEnabled?: boolean;
 }
+
+type MediaKind = 'audio' | 'video';
 
 const DEFAULT_ICE_SERVERS: RTCIceServer[] = [{ urls: 'stun:stun.l.google.com:19302' }];
 
@@ -35,6 +43,8 @@ export const useWebRTC = (
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [remotePeers, setRemotePeers] = useState<Map<string, RemotePeerInfo>>(new Map());
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+  const [isVideoEnabled, setIsVideoEnabled] = useState(true);
 
   const localStreamRef = useRef<MediaStream | null>(null);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
@@ -42,6 +52,41 @@ export const useWebRTC = (
   const peersRef = useRef<Map<string, PeerConnection>>(new Map());
   const mediaReadyRef = useRef<Promise<void> | null>(null);
   const iceServersRef = useRef<RTCIceServer[]>(DEFAULT_ICE_SERVERS);
+  const mediaEnabledRef = useRef<Record<MediaKind, boolean>>({ audio: true, video: true });
+  const roomModeRef = useRef(roomMode);
+  roomModeRef.current = roomMode;
+
+  const updatePeer = (peerId: string, info: Partial<RemotePeerInfo>) => {
+    setRemotePeers((prev) => {
+      const next = new Map(prev);
+      next.set(peerId, { nickname: '', ...prev.get(peerId), ...info });
+      return next;
+    });
+  };
+
+  const announceMediaState = (kind: MediaKind) => {
+    socketRef.current?.emit(`toggle-${kind}`, {
+      roomId,
+      enabled: mediaEnabledRef.current[kind],
+    });
+  };
+
+  const setMediaEnabled = (kind: MediaKind, enabled: boolean) => {
+    const tracks =
+      kind === 'audio'
+        ? localStreamRef.current?.getAudioTracks()
+        : localStreamRef.current?.getVideoTracks();
+    tracks?.forEach((track) => {
+      track.enabled = enabled;
+    });
+    mediaEnabledRef.current[kind] = enabled;
+    if (kind === 'audio') setIsAudioEnabled(enabled);
+    else setIsVideoEnabled(enabled);
+    announceMediaState(kind);
+  };
+
+  const toggleAudio = () => setMediaEnabled('audio', !mediaEnabledRef.current.audio);
+  const toggleVideo = () => setMediaEnabled('video', !mediaEnabledRef.current.video);
 
   useEffect(() => {
     if (!roomMode) return;
@@ -55,6 +100,12 @@ export const useWebRTC = (
         stream.getTracks().forEach((t) => t.stop());
         return;
       }
+      stream.getAudioTracks().forEach((track) => {
+        track.enabled = mediaEnabledRef.current.audio;
+      });
+      stream.getVideoTracks().forEach((track) => {
+        track.enabled = mediaEnabledRef.current.video;
+      });
       setLocalStream(stream);
       localStreamRef.current = stream;
       if (localVideoRef.current) {
@@ -88,12 +139,7 @@ export const useWebRTC = (
     pc.ontrack = ({ streams }) => {
       const remoteStream = streams[0];
 
-      setRemotePeers((prev) => {
-        const m = new Map(prev);
-        const prevInfo = m.get(peerId) ?? { nickname: '', profileImage: undefined };
-        m.set(peerId, { ...prevInfo, stream: remoteStream });
-        return m;
-      });
+      updatePeer(peerId, { stream: remoteStream });
     };
 
     peersRef.current.set(peerId, { pc, pendingCandidates: [] });
@@ -163,9 +209,7 @@ export const useWebRTC = (
       (list: { userId: string; nickname: string; profileImage?: string }[]) => {
         list.forEach((u) => {
           if (u.userId === socket.id) return;
-          setRemotePeers((prev) =>
-            new Map(prev).set(u.userId, { nickname: u.nickname, profileImage: u.profileImage })
-          );
+          updatePeer(u.userId, { nickname: u.nickname, profileImage: u.profileImage });
           makeOffer(u.userId);
         });
       }
@@ -182,8 +226,17 @@ export const useWebRTC = (
         profileImage?: string;
       }) => {
         if (userId === socket.id) return;
-        setRemotePeers((prev) => new Map(prev).set(userId, { nickname, profileImage }));
+        updatePeer(userId, { nickname, profileImage });
+        announceMediaState('audio');
+        if (roomModeRef.current === 'small') announceMediaState('video');
       }
+    );
+
+    socket.on('user-toggled-audio', ({ userId, enabled }: { userId: string; enabled: boolean }) =>
+      updatePeer(userId, { audioEnabled: enabled })
+    );
+    socket.on('user-toggled-video', ({ userId, enabled }: { userId: string; enabled: boolean }) =>
+      updatePeer(userId, { videoEnabled: enabled })
     );
 
     socket.on('offer', ({ from, offer }) => handleOffer(from, offer));
@@ -208,5 +261,14 @@ export const useWebRTC = (
     };
   }, [roomId]);
 
-  return { localStream, remotePeers, localVideoRef, socket };
+  return {
+    localStream,
+    remotePeers,
+    localVideoRef,
+    socket,
+    isAudioEnabled,
+    isVideoEnabled,
+    toggleAudio,
+    toggleVideo,
+  };
 };

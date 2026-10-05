@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWebRTC } from '../hooks/useWebRTC';
 import type { Socket } from 'socket.io-client';
+import MediaControls from './media/MediaControls';
+import MutedBadge from './media/MutedBadge';
 
 interface VideoChatProps {
   roomId: string;
@@ -17,7 +19,16 @@ export const VideoChat: React.FC<VideoChatProps> = ({
   onSocketReady,
 }: VideoChatProps) => {
   const { t } = useTranslation();
-  const { localStream, remotePeers, localVideoRef, socket } = useWebRTC(roomId, roomMode);
+  const {
+    localStream,
+    remotePeers,
+    localVideoRef,
+    socket,
+    isAudioEnabled,
+    isVideoEnabled,
+    toggleAudio,
+    toggleVideo,
+  } = useWebRTC(roomId, roomMode);
 
   useEffect(() => {
     if (socket && onSocketReady) {
@@ -28,12 +39,21 @@ export const VideoChat: React.FC<VideoChatProps> = ({
   const totalUser = remotePeers.size + 1;
 
   const allVideos = [
-    { id: 'local', stream: localStream, label: userNickname, isLocal: true },
+    {
+      id: 'local',
+      stream: localStream,
+      label: userNickname,
+      isLocal: true,
+      audioEnabled: isAudioEnabled,
+      videoEnabled: isVideoEnabled,
+    },
     ...Array.from(remotePeers.entries()).map(([peerId, info], index) => ({
       id: peerId,
       stream: info.stream,
       label: info.nickname || t('room.participantNumbered', { number: index + 1 }),
       isLocal: false,
+      audioEnabled: info.audioEnabled !== false,
+      videoEnabled: info.videoEnabled !== false,
     })),
   ];
 
@@ -99,10 +119,19 @@ export const VideoChat: React.FC<VideoChatProps> = ({
                 />
               )}
 
-              <div className="absolute bottom-4 left-4">
+              {!video.videoEnabled && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+                  <span className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-400 text-3xl font-bold text-white">
+                    {video.label?.[0]?.toUpperCase() ?? '?'}
+                  </span>
+                </div>
+              )}
+
+              <div className="absolute bottom-4 left-4 flex items-center gap-2">
                 <span className="bg-white/90 text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold shadow-md backdrop-blur-sm">
                   {video.label}
                 </span>
+                {!video.audioEnabled && <MutedBadge />}
               </div>
 
               {video.isLocal && !localStream && (
@@ -117,6 +146,13 @@ export const VideoChat: React.FC<VideoChatProps> = ({
           ))}
         </div>
       </div>
+      <MediaControls
+        disabled={!localStream}
+        isAudioEnabled={isAudioEnabled}
+        onToggleAudio={toggleAudio}
+        isVideoEnabled={isVideoEnabled}
+        onToggleVideo={toggleVideo}
+      />
     </div>
   );
 };

@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
+import MutedBadge from './MutedBadge';
 
 interface Props {
   stream?: MediaStream;
   nickname: string;
   profileImage?: string;
   isLocal?: boolean;
+  audioEnabled?: boolean;
 }
 
 export const ParticipantTile: React.FC<Props> = ({
@@ -12,6 +14,7 @@ export const ParticipantTile: React.FC<Props> = ({
   nickname,
   profileImage,
   isLocal = false,
+  audioEnabled = true,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -49,9 +52,10 @@ export const ParticipantTile: React.FC<Props> = ({
           )}
         </div>
       )}
-      <span className="absolute bottom-2 left-2 bg-white/80 px-3 py-1 text-sm font-medium rounded-md">
-        {nickname}
-      </span>
+      <div className="absolute bottom-2 left-2 flex items-center gap-2">
+        <span className="bg-white/80 px-3 py-1 text-sm font-medium rounded-md">{nickname}</span>
+        {!audioEnabled && <MutedBadge />}
+      </div>
     </div>
   );
 };

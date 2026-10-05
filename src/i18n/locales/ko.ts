@@ -154,6 +154,14 @@ const ko = {
     participant: '참가자',
     participantNumbered: '참가자 {{number}}',
     connectingCamera: '카메라 연결 중...',
+    controls: {
+      label: '마이크·카메라 조작',
+      muteMic: '마이크 끄기',
+      unmuteMic: '마이크 켜기',
+      cameraOff: '카메라 끄기',
+      cameraOn: '카메라 켜기',
+      mutedIndicator: '마이크 꺼짐',
+    },
   },
   chat: {
     title: '채팅',
