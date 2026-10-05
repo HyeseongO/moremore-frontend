@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { validateNickname } from '../utils/validation';
+import { API_URL } from '../services/api';
 
 function GoogleSignup() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ function GoogleSignup() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/auth/check-nickname?nickname=${nickname}`,
+        `${API_URL}/auth/check-nickname?nickname=${nickname}`,
         {
           credentials: 'include',
         }
@@ -58,7 +59,7 @@ function GoogleSignup() {
     setError('');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/google/complete`, {
+      const response = await fetch(`${API_URL}/auth/google/complete`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

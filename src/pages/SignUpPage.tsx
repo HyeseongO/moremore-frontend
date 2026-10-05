@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Background from '../components/Background';
 import Input from '../components/Input';
 import BackIcon from '../assets/images/arrow-back.svg?react';
+import { API_URL } from '../services/api';
 import { validateEmail, validateNickname, validatePassword } from '../utils/validation';
 import { Link } from 'react-router-dom';
 
@@ -45,7 +46,7 @@ function SignUpPage() {
 
   const handleSignup = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
+      const response = await fetch(`${API_URL}/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

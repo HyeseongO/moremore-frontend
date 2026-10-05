@@ -3,6 +3,7 @@ import WelcomeImage from '../assets/images/welcomeImage.svg?react';
 import MoremoreOnImage from '../assets/images/moremoreOn.svg?react';
 import GoogleSignUp from '../assets/images/signup-google.svg?react';
 import Input from '../components/Input';
+import { API_URL } from '../services/api';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -30,7 +31,7 @@ function LoginPage() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,7 +57,7 @@ function LoginPage() {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+    window.location.href = `${API_URL}/auth/google`;
   };
 
   return (

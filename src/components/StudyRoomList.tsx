@@ -1,7 +1,8 @@
 import { Users, Crown, Calendar } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { io, type Socket } from 'socket.io-client';
+import { type Socket } from 'socket.io-client';
+import { createSocket } from '../services/socket';
 
 export interface StudyRoom {
   id: number;
@@ -37,17 +38,7 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
   const [activeUsersMap, setActiveUsersMap] = useState<ActiveUsersMap>({});
 
   useEffect(() => {
-    const token = document.cookie
-      .split('; ')
-      .find((row) => row.startsWith('accessToken='))
-      ?.split('=')[1];
-
-    const newSocket = io(import.meta.env.VITE_API_URL, {
-      auth: {
-        token: token,
-      },
-      transports: ['websocket'],
-    });
+    const newSocket = createSocket();
     socketRef.current = newSocket;
 
     newSocket.on('connect', () => {

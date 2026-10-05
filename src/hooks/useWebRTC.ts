@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import io, { Socket } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
+import api from '../services/api';
+import { createSocket } from '../services/socket';
 
 interface PeerConnection {
   pc: RTCPeerConnection;
@@ -19,6 +21,13 @@ export interface RemotePeerInfo {
   profileImage?: string;
 }
 
+const DEFAULT_ICE_SERVERS: RTCIceServer[] = [{ urls: 'stun:stun.l.google.com:19302' }];
+
+const fetchIceServers = async () => {
+  const response = await api.get('/webrtc/ice-servers');
+  return response.data.data.iceServers as RTCIceServer[];
+};
+
 export const useWebRTC = (
   roomId: string,
   roomMode: 'small' | 'large' | null
@@ -32,10 +41,7 @@ export const useWebRTC = (
   const socketRef = useRef<Socket | null>(null);
   const peersRef = useRef<Map<string, PeerConnection>>(new Map());
   const mediaReadyRef = useRef<Promise<void> | null>(null);
-
-  const rtcConfig: RTCConfiguration = {
-    iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-  };
+  const iceServersRef = useRef<RTCIceServer[]>(DEFAULT_ICE_SERVERS);
 
   useEffect(() => {
     if (!roomMode) return;
@@ -69,7 +75,7 @@ export const useWebRTC = (
   const getPeerConnection = (peerId: string) => {
     if (peersRef.current.has(peerId)) return peersRef.current.get(peerId)!.pc;
 
-    const pc = new RTCPeerConnection(rtcConfig);
+    const pc = new RTCPeerConnection({ iceServers: iceServersRef.current });
 
     localStreamRef.current?.getTracks().forEach((t) => pc.addTrack(t, localStreamRef.current!));
 
@@ -138,15 +144,18 @@ export const useWebRTC = (
   };
 
   useEffect(() => {
-    const socket = io(import.meta.env.VITE_API_URL, {
-      withCredentials: true,
-      transports: ['websocket'],
-    });
+    const iceReady = fetchIceServers()
+      .then((iceServers) => {
+        iceServersRef.current = iceServers;
+      })
+      .catch(() => {});
+
+    const socket = createSocket();
     socketRef.current = socket;
     setSocket(socket);
 
     socket.on('connect', async () => {
-      await mediaReadyRef.current;
+      await Promise.all([mediaReadyRef.current, iceReady]);
       if (socket.connected) socket.emit('join-room', roomId);
     });
     socket.on(
