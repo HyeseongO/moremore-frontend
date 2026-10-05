@@ -5,6 +5,7 @@ import GoogleSignUp from '../assets/images/signup-google.svg?react';
 import Input from '../components/Input';
 import { API_URL } from '../services/api';
 import { DEMO_ACCOUNTS, type DemoAccount } from '../utils/demoAccounts';
+import { translateErrorBody } from '../utils/apiError';
 import LanguageToggle from '../components/LanguageToggle';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -51,8 +52,8 @@ function LoginPage() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
-        alert(error.message || t('login.failed'));
+        const error = await response.json().catch(() => null);
+        alert(translateErrorBody(error, 'login.failed'));
         return;
       }
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import StudyRoomService from '../services/studyroomService';
+import { translateApiError } from '../utils/apiError';
 
 interface StudyRoomModalProps {
   isOpen: boolean;
@@ -39,8 +40,8 @@ function StudyRoomModal({ isOpen, onClose, onSuccess }: StudyRoomModalProps) {
 
       onSuccess(roomData);
       handleClose();
-    } catch (error: any) {
-      setError(error.response?.data?.message || t('createRoom.failed'));
+    } catch (error) {
+      setError(translateApiError(error, 'createRoom.failed'));
     }
   };
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
 import StudyRoomService from '../services/studyroomService';
+import { translateApiError } from '../utils/apiError';
 
 interface JoinByInviteModalProps {
   isOpen: boolean;
@@ -51,8 +51,7 @@ function JoinByInviteModal({ isOpen, onClose, onSuccess }: JoinByInviteModalProp
       onSuccess();
       handleClose();
     } catch (err) {
-      const message = axios.isAxiosError(err) ? err.response?.data?.message : undefined;
-      setError(message || t('joinRoom.failed'));
+      setError(translateApiError(err, 'joinRoom.failed'));
     } finally {
       setIsSubmitting(false);
     }

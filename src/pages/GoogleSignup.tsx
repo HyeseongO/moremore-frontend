@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { validateNickname } from '../utils/validation';
 import { API_URL } from '../services/api';
+import { translateErrorBody } from '../utils/apiError';
 import LanguageToggle from '../components/LanguageToggle';
 
 function GoogleSignup() {
@@ -28,7 +29,7 @@ function GoogleSignup() {
 
     try {
       const response = await fetch(
-        `${API_URL}/auth/check-nickname?nickname=${nickname}`,
+        `${API_URL}/auth/check-nickname?nickname=${encodeURIComponent(nickname)}`,
         {
           credentials: 'include',
         }
@@ -36,7 +37,7 @@ function GoogleSignup() {
 
       const result = await response.json();
       setNicknameAvailable(result.data.available);
-      setError(result.data.available ? '' : result.data.message);
+      setError(result.data.available ? '' : t('errors.NICKNAME_TAKEN'));
     } catch (error) {
       setError(t('googleSignup.checkFailed'));
     } finally {
@@ -72,8 +73,8 @@ function GoogleSignup() {
       if (response.ok) {
         navigate('/main');
       } else {
-        const error = await response.json();
-        setError(error.message || t('googleSignup.failed'));
+        const error = await response.json().catch(() => null);
+        setError(translateErrorBody(error, 'googleSignup.failed'));
       }
     } catch (error) {
       setError(t('common.networkError'));

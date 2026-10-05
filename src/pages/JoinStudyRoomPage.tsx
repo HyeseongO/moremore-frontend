@@ -1,8 +1,8 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import StudyRoomService from '../services/studyroomService';
+import { translateApiError } from '../utils/apiError';
 
 function JoinStudyRoomPage() {
   const { inviteCode } = useParams<{ inviteCode: string }>();
@@ -20,12 +20,11 @@ function JoinStudyRoomPage() {
         const room = await StudyRoomService.joinByInviteCode(inviteCode!);
         navigate(`/studyroom/${room.id}`, { replace: true });
       } catch (err) {
-        const message = axios.isAxiosError(err) ? err.response?.data?.message : undefined;
-        setErrorMessage(message || t('joinRoom.invalidCode'));
+        setErrorMessage(translateApiError(err, 'joinRoom.invalidCode'));
       }
     };
     joinRoom();
-  }, [inviteCode, navigate, t]);
+  }, [inviteCode, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-amber-100">

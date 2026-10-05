@@ -7,6 +7,7 @@ import LanguageToggle from '../components/LanguageToggle';
 import BackIcon from '../assets/images/arrow-back.svg?react';
 import { API_URL } from '../services/api';
 import { validateEmail, validateNickname, validatePassword } from '../utils/validation';
+import { translateErrorBody } from '../utils/apiError';
 import { Link } from 'react-router-dom';
 
 function SignUpPage() {
@@ -58,12 +59,10 @@ function SignUpPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => null);
         console.error('Sign-up failed:', errorData);
 
-        const errorMessage = Array.isArray(errorData.message)
-          ? errorData.message.join(', ')
-          : errorData.message || t('common.serverError');
+        const errorMessage = translateErrorBody(errorData, 'common.serverError');
 
         alert(t('signup.failed', { message: errorMessage }));
         return;

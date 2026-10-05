@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import type { MyStudyRoom, StudyRoomSuccessResponse } from '../types/studyroom.types';
 import StudyRoomService from '../services/studyroomService';
 import api from '../services/api';
+import { translateApiError } from '../utils/apiError';
 
 interface UserInfo {
   id: number;
@@ -89,7 +90,7 @@ function MainPage() {
       await api.delete(`/studyrooms/${roomId}`);
       await fetchMyStudyRooms();
     } catch (error) {
-      alert(t('main.deleteFailed'));
+      alert(translateApiError(error, 'main.deleteFailed'));
     }
   };
 
