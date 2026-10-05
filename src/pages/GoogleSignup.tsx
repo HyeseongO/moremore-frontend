@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { validateNickname } from '../utils/validation';
 import { API_URL } from '../services/api';
+import LanguageToggle from '../components/LanguageToggle';
 
 function GoogleSignup() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [nickname, setNickname] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,7 +18,7 @@ function GoogleSignup() {
     const validationErrors = validateNickname(nickname);
 
     if (validationErrors.length > 0) {
-      setError(validationErrors[0]);
+      setError(t(validationErrors[0]));
       setNicknameAvailable(false);
       return;
     }
@@ -35,7 +38,7 @@ function GoogleSignup() {
       setNicknameAvailable(result.data.available);
       setError(result.data.available ? '' : result.data.message);
     } catch (error) {
-      setError('닉네임 확인 중 오류가 발생했습니다.');
+      setError(t('googleSignup.checkFailed'));
     } finally {
       setChecking(false);
     }
@@ -46,12 +49,12 @@ function GoogleSignup() {
 
     const validationErrors = validateNickname(nickname);
     if (validationErrors.length > 0) {
-      setError(validationErrors[0]);
+      setError(t(validationErrors[0]));
       return;
     }
 
     if (!nicknameAvailable) {
-      setError('닉네임 중복 확인을 해주세요.');
+      setError(t('googleSignup.checkRequired'));
       return;
     }
 
@@ -70,10 +73,10 @@ function GoogleSignup() {
         navigate('/main');
       } else {
         const error = await response.json();
-        setError(error.message || '회원가입에 실패했습니다.');
+        setError(error.message || t('googleSignup.failed'));
       }
     } catch (error) {
-      setError('네트워크 오류가 발생했습니다.');
+      setError(t('common.networkError'));
     } finally {
       setLoading(false);
     }
@@ -81,22 +84,23 @@ function GoogleSignup() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-100">
+      <LanguageToggle />
       <div className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full mb-4">
             <span className="text-3xl">👋</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">거의 다 왔어요!</h1>
-          <p className="text-gray-600">사용하실 닉네임을 설정해주세요</p>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">{t('googleSignup.title')}</h1>
+          <p className="text-gray-600">{t('googleSignup.subtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">닉네임</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('googleSignup.nicknameLabel')}</label>
             <div className="relative">
               <input
                 type="text"
-                placeholder="닉네임 (2-20자)"
+                placeholder={t('googleSignup.nicknamePlaceholder')}
                 value={nickname}
                 onChange={(e) => {
                   setNickname(e.target.value);
@@ -170,7 +174,7 @@ function GoogleSignup() {
                 )}
               </div>
             </div>
-            <p className="mt-1 text-sm text-gray-500">한글, 영문, 숫자, -, _ 사용 가능</p>
+            <p className="mt-1 text-sm text-gray-500">{t('googleSignup.nicknameHint')}</p>
           </div>
 
           {error && (
@@ -214,10 +218,10 @@ function GoogleSignup() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                처리 중...
+                {t('googleSignup.processing')}
               </span>
             ) : (
-              '시작하기'
+              t('googleSignup.submit')
             )}
           </button>
         </form>

@@ -5,16 +5,19 @@ import GoogleSignUp from '../assets/images/signup-google.svg?react';
 import Input from '../components/Input';
 import { API_URL } from '../services/api';
 import { DEMO_ACCOUNTS, type DemoAccount } from '../utils/demoAccounts';
+import LanguageToggle from '../components/LanguageToggle';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 const LOGIN_ERROR_MESSAGES: Record<string, string> = {
-  google_login_failed: '구글 로그인이 취소되었거나 실패했습니다. 다시 시도해주세요.',
+  google_login_failed: 'login.errors.googleLoginFailed',
 };
 
 function LoginPage() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const loginErrorMessage = LOGIN_ERROR_MESSAGES[searchParams.get('error') ?? ''];
+  const loginErrorKey = LOGIN_ERROR_MESSAGES[searchParams.get('error') ?? ''];
   const [emailValue, setEmailValue] = useState('');
   const [isEmailValid, setEmailValid] = useState(false);
   const [passwordValue, setPasswordValue] = useState('');
@@ -49,14 +52,14 @@ function LoginPage() {
 
       if (!response.ok) {
         const error = await response.json();
-        alert(error.message || '로그인 실패');
+        alert(error.message || t('login.failed'));
         return;
       }
 
       navigate('/main');
     } catch (error) {
-      console.error('로그인 에러:', error);
-      alert('서버 오류가 발생했습니다.');
+      console.error('Login error:', error);
+      alert(t('login.serverError'));
     }
   };
 
@@ -70,6 +73,7 @@ function LoginPage() {
 
   return (
     <div className="relative min-h-screen bg-blue-400">
+      <LanguageToggle />
       <Background size="medium">
         <WelcomeImage className="w-44 h-44 mx-auto mb-3 mt-3" />
         <MoremoreOnImage />
@@ -84,7 +88,7 @@ function LoginPage() {
             className="w-full border-2 px-6 py-2 rounded-lg hover:bg-gray-50 invalid:border-red-600 invalid:text-red-600 focus:border-blue-600"
           />
           {emailValue && !isEmailValid && (
-            <p style={{ color: 'red' }}>유효하지 않은 이메일 형식입니다.</p>
+            <p style={{ color: 'red' }}>{t('login.invalidEmail')}</p>
           )}
           <div className="mb-2" />
           <Input
@@ -96,18 +100,18 @@ function LoginPage() {
             className="w-full border-2 px-6 py-2 rounded-lg hover:bg-gray-50 focus:border-blue-600"
           />
           {passwordValue && !isPasswordValid && (
-            <p style={{ color: 'red' }}>잘못된 비밀번호 형식입니다.</p>
+            <p style={{ color: 'red' }}>{t('login.invalidPassword')}</p>
           )}
           <div className="mb-8" />
           <button
             className="w-full bg-black text-white py-3 rounded-lg font-medium active:bg-gray-700 hover:bg-gray-800 transition-colors"
             onClick={handleLogin}
           >
-            로그인
+            {t('login.submit')}
           </button>
           <div className="flex items-center my-8 mt-3">
             <div className="flex-1 border-t-2 border-gray-300"></div>
-            <span className="px-4 text-black-600 text-lg">Or</span>
+            <span className="px-4 text-black-600 text-lg">{t('login.or')}</span>
             <div className="flex-1 border-t-2 border-gray-300"></div>
           </div>
           <button onClick={handleGoogleLogin} className="block mx-auto -mt-6">
@@ -115,32 +119,32 @@ function LoginPage() {
           </button>
           {DEMO_ACCOUNTS.length > 0 && (
             <div className="mt-3 flex items-center justify-center gap-2 text-sm">
-              <span className="text-gray-500">가입 없이 체험</span>
+              <span className="whitespace-nowrap text-gray-500">{t('login.demoPrompt')}</span>
               {DEMO_ACCOUNTS.map((account) => (
                 <button
-                  key={account.label}
+                  key={account.number}
                   onClick={() => handleDemoLogin(account)}
-                  className="rounded-full border border-blue-500 px-3 py-1 text-blue-500 hover:bg-blue-50 transition-colors"
+                  className="whitespace-nowrap rounded-full border border-blue-500 px-3 py-1 text-blue-500 hover:bg-blue-50 transition-colors"
                 >
-                  {account.label}
+                  {t('login.demoLabel', { number: account.number })}
                 </button>
               ))}
             </div>
           )}
-          {loginErrorMessage && (
+          {loginErrorKey && (
             <p role="alert" className="mt-3 text-sm text-center text-red-600 break-keep">
-              {loginErrorMessage}
+              {t(loginErrorKey)}
             </p>
           )}
         </div>
         <div className="text-center mt-4">
-          <span className="text-gray-600">아직 모어모어온 회원이 아니신가요? </span>
+          <span className="text-gray-600">{t('login.noAccount')} </span>
           <Link to="/signup" className="text-blue-500 hover:underline">
-            회원가입
+            {t('login.signupLink')}
           </Link>
         </div>
         <Link to="/privacy" className="mt-2 text-xs text-gray-400 hover:underline">
-          개인정보처리방침
+          {t('login.privacyLink')}
         </Link>
       </Background>
     </div>
