@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Socket } from 'socket.io-client';
 import api from '../services/api';
 import { createSocket } from '../services/socket';
+import { getPreferredMedia } from '../utils/mediaPreferences';
 
 interface PeerConnection {
   pc: RTCPeerConnection;
@@ -93,9 +94,7 @@ export const useWebRTC = (
     let cancelled = false;
 
     const initLocalMedia = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia(
-        roomMode === 'small' ? { video: true, audio: true } : { video: false, audio: true }
-      );
+      const stream = await getPreferredMedia(roomMode === 'small');
       if (cancelled) {
         stream.getTracks().forEach((t) => t.stop());
         return;

@@ -275,6 +275,28 @@ const en: Messages = {
       success: 'Your account has been deleted. Thank you for using Moremore On.',
       failed: 'Could not delete your account.',
     },
+    media: {
+      title: 'Audio & video',
+      description:
+        'Choose the camera and microphone to use in study rooms. Your choice is saved in this browser.',
+      preview: 'Camera preview',
+      camera: 'Camera',
+      microphone: 'Microphone',
+      cameraNumbered: 'Camera {{number}}',
+      microphoneNumbered: 'Microphone {{number}}',
+      noDevice: 'No device',
+      level: 'Microphone level',
+      start: 'Test camera & mic',
+      starting: 'Opening devices...',
+      stop: 'Stop test',
+      appliedNote: 'Rooms you are already in will use the new device after you rejoin.',
+      errors: {
+        denied:
+          'Camera and microphone access is blocked. Allow it in your browser’s site settings and try again.',
+        notFound: 'No camera or microphone was found.',
+        failed: 'Could not open your devices. Check whether another app is using them.',
+      },
+    },
     about: {
       title: 'About',
       privacy: 'Privacy Policy',

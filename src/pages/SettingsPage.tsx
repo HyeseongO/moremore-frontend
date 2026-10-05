@@ -11,6 +11,7 @@ import SettingsSection from '../components/settings/SettingsSection';
 import NicknameForm from '../components/settings/NicknameForm';
 import PasswordForm from '../components/settings/PasswordForm';
 import DeleteAccountSection from '../components/settings/DeleteAccountSection';
+import MediaDeviceSection from '../components/settings/MediaDeviceSection';
 
 function SettingsPage() {
   const { t, i18n } = useTranslation();
@@ -104,6 +105,8 @@ function SettingsPage() {
               )}
             </>
           )}
+
+          <MediaDeviceSection />
 
           <SettingsSection title={t('settings.language.title')}>
             <p className="text-sm text-gray-600">{t('settings.language.description')}</p>
