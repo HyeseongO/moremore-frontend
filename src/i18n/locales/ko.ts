@@ -199,8 +199,39 @@ const ko = {
     MESSAGE_FETCH_FAILED: '메시지를 불러오지 못했습니다.',
     MESSAGE_DELETE_FAILED: '메시지 삭제 중 오류가 발생했습니다.',
   },
+  userMenu: {
+    open: '계정 메뉴 열기',
+    settings: '설정',
+    logout: '로그아웃',
+    loggingOut: '로그아웃 중...',
+  },
+  settings: {
+    title: '설정',
+    backToMain: '← 메인으로',
+    profile: {
+      title: '내 정보',
+      loadFailed: '내 정보를 불러오지 못했습니다.',
+      providers: {
+        EMAIL: '이메일 계정',
+        GOOGLE: 'Google 계정',
+      },
+    },
+    language: {
+      title: '화면 언어',
+      description: '모어모어온에서 사용할 언어를 선택하세요.',
+      names: {
+        ko: '한국어',
+        en: 'English',
+      },
+    },
+    about: {
+      title: '정보',
+      privacy: '개인정보처리방침',
+      contact: '문의하기 (GitHub 이슈)',
+    },
+  },
   privacy: {
-    backToLogin: '← 로그인 화면으로',
+    back: '← 돌아가기',
     title: '개인정보처리방침',
     effectiveDate: '시행일: {{date}}',
     intro:

@@ -201,8 +201,39 @@ const en: Messages = {
     MESSAGE_FETCH_FAILED: 'Failed to load messages.',
     MESSAGE_DELETE_FAILED: 'Failed to delete the message.',
   },
+  userMenu: {
+    open: 'Open account menu',
+    settings: 'Settings',
+    logout: 'Log out',
+    loggingOut: 'Logging out...',
+  },
+  settings: {
+    title: 'Settings',
+    backToMain: '← Back to main',
+    profile: {
+      title: 'My account',
+      loadFailed: 'Could not load your account information.',
+      providers: {
+        EMAIL: 'Email account',
+        GOOGLE: 'Google account',
+      },
+    },
+    language: {
+      title: 'Display language',
+      description: 'Choose the language to use in Moremore On.',
+      names: {
+        ko: '한국어',
+        en: 'English',
+      },
+    },
+    about: {
+      title: 'About',
+      privacy: 'Privacy Policy',
+      contact: 'Contact us (GitHub Issues)',
+    },
+  },
   privacy: {
-    backToLogin: '← Back to login',
+    back: '← Back',
     title: 'Privacy Policy',
     effectiveDate: 'Effective date: {{date}}',
     intro:
