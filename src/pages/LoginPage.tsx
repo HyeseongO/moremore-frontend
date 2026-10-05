@@ -4,6 +4,7 @@ import MoremoreOnImage from '../assets/images/moremoreOn.svg?react';
 import GoogleSignUp from '../assets/images/signup-google.svg?react';
 import Input from '../components/Input';
 import { API_URL } from '../services/api';
+import { DEMO_ACCOUNTS, type DemoAccount } from '../utils/demoAccounts';
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -35,7 +36,7 @@ function LoginPage() {
     setIsPasswordValid(isValidPassword);
   };
 
-  const handleLogin = async () => {
+  const loginWith = async (email: string, password: string) => {
     try {
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
@@ -43,10 +44,7 @@ function LoginPage() {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({
-          email: emailValue,
-          password: passwordValue,
-        }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
@@ -62,6 +60,10 @@ function LoginPage() {
     }
   };
 
+  const handleLogin = () => loginWith(emailValue, passwordValue);
+
+  const handleDemoLogin = (account: DemoAccount) => loginWith(account.email, account.password);
+
   const handleGoogleLogin = () => {
     window.location.href = `${API_URL}/auth/google`;
   };
@@ -69,7 +71,7 @@ function LoginPage() {
   return (
     <div className="relative min-h-screen bg-blue-400">
       <Background size="medium">
-        <WelcomeImage className="w-48 h-48 mx-auto mb-5 mt-5" />
+        <WelcomeImage className="w-44 h-44 mx-auto mb-3 mt-3" />
         <MoremoreOnImage />
         <div className="mb-5" />
         <div className="w-64 mx-auto">
@@ -111,6 +113,20 @@ function LoginPage() {
           <button onClick={handleGoogleLogin} className="block mx-auto -mt-6">
             <GoogleSignUp />
           </button>
+          {DEMO_ACCOUNTS.length > 0 && (
+            <div className="mt-3 flex items-center justify-center gap-2 text-sm">
+              <span className="text-gray-500">가입 없이 체험</span>
+              {DEMO_ACCOUNTS.map((account) => (
+                <button
+                  key={account.label}
+                  onClick={() => handleDemoLogin(account)}
+                  className="rounded-full border border-blue-500 px-3 py-1 text-blue-500 hover:bg-blue-50 transition-colors"
+                >
+                  {account.label}
+                </button>
+              ))}
+            </div>
+          )}
           {loginErrorMessage && (
             <p role="alert" className="mt-3 text-sm text-center text-red-600 break-keep">
               {loginErrorMessage}
