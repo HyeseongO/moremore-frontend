@@ -48,9 +48,6 @@ function LoginPage() {
         return;
       }
 
-      const data = await response.json();
-      console.log('로그인 성공:', data);
-
       navigate('/main');
     } catch (error) {
       console.error('로그인 에러:', error);

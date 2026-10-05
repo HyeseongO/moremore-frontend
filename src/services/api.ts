@@ -15,8 +15,6 @@ api.interceptors.response.use(
     return response;
   },
   async (error) => {
-    console.log('Response error:', error.response?.status);
-
     const originalRequest = error.config;
 
     if (
@@ -29,8 +27,7 @@ api.interceptors.response.use(
       try {
         await api.post('/auth/refresh');
         return api(originalRequest);
-      } catch (refreshError) {
-        console.log('Refresh token failed:', refreshError);
+      } catch {
         window.location.href = '/';
       }
     }

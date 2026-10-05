@@ -51,8 +51,6 @@ function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps)
     socketRef.current = newSocket;
 
     newSocket.on('connect', () => {
-      console.log('StudyRoomList socket connected');
-
       rooms.forEach((room) => {
         newSocket.emit('getActiveUsers', { roomId: room.id.toString() });
       });

@@ -90,7 +90,6 @@ export const VideoChat: React.FC<VideoChatProps> = ({
                   }}
                   className="w-full h-full object-cover"
                   onLoadedMetadata={(e) => {
-                    console.log('Remote video loaded:', video.id);
                     (e.target as HTMLVideoElement).play().catch((err) => {
                       console.error('Error playing remote video:', err);
                     });

@@ -65,8 +65,6 @@ function SignUpPage() {
         return;
       }
 
-      const data = await response.json();
-      console.log('회원가입 성공:', data);
       alert('회원가입이 완료되었습니다!');
       navigate('/');
     } catch (error) {

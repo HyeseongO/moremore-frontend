@@ -1,4 +1,4 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Background from '../components/Background';
 import { useCallback, useEffect, useState } from 'react';
 import api from '../services/api';
@@ -6,7 +6,6 @@ import type { StudyRoom } from '../types/studyroom.types';
 import { IoChatbubbleEllipses } from 'react-icons/io5';
 import { ChatSidebar } from '../components/ChatSidebar';
 import type { Socket } from 'socket.io-client';
-import { useNavigate } from 'react-router-dom';
 import AudioChat from '../components/media/AudioChat';
 import { VideoChat } from '../components/VideoChat';
 
@@ -27,7 +26,6 @@ function RoomPage() {
 
   const handleSocketReady = useCallback(
     (newSocket: Socket) => {
-      console.log('RoomPage: Socket ready, setting up listeners');
       setSocket(newSocket);
 
       newSocket.on('room-count-update', (data: { roomId: string; currentMembers: number }) => {
@@ -38,28 +36,14 @@ function RoomPage() {
         if (data.roomId === roomId) setActiveUsersCount(data.count);
       });
 
-      console.log('Requesting active users for room:', roomId);
       newSocket.emit('getActiveUsers', { roomId });
     },
     [roomId]
   );
 
-  const handleLeaveRoom = useCallback(async () => {
-    if (socket && roomId) {
-      socket.emit('leave-room', roomId);
-
-      setTimeout(() => {
-        navigate('/main');
-      }, 100);
-    } else {
-      navigate('/main');
-    }
-  }, [socket, roomId, navigate]);
-
   useEffect(() => {
     return () => {
       if (socket && roomId) {
-        console.log('RoomPage unmounting, leaving room:', roomId);
         socket.emit('leave-room', roomId);
       }
     };
@@ -68,7 +52,6 @@ function RoomPage() {
   useEffect(() => {
     return () => {
       if (socket) {
-        console.log('RoomPage: Cleaning up socket listeners');
         socket.off('room-count-update');
         socket.off('activeUserUpdate');
       }
@@ -93,7 +76,7 @@ function RoomPage() {
         return data.token;
       }
     } catch (error) {
-      console.error('사용자 정보 조회 실채:', error);
+      console.error('사용자 정보 조회 실패:', error);
     }
   };
 
@@ -107,7 +90,7 @@ function RoomPage() {
       } else {
         setError('존재하지 않는 스터디룸 입니다.');
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('스터디룸 정보 조회 실패:', error);
       setError('스터디룸 정보를 불러올 수 없습니다.');
     } finally {
@@ -165,13 +148,13 @@ function RoomPage() {
           </div>
         </div>
 
-        <div className="absolute top-6 right-16 z-10" onClick={handleLeaveRoom}>
-          <Link
-            to="/main"
+        <div className="absolute top-6 right-16 z-10">
+          <button
+            onClick={() => navigate('/main')}
             className="px-8 py-1.5 rounded-lg bg-rose-200 hover:bg-rose-300 text-rose-800 font-medium"
           >
             나가기
-          </Link>
+          </button>
         </div>
 
         <button
