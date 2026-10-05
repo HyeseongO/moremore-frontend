@@ -33,8 +33,8 @@ interface ActiveUsersMap {
 
 function StudyRoomList({ rooms, onRoomClick, onDeleteRoom }: StudyRoomListProps) {
   const navigate = useNavigate();
-  const [activeUsersMap, setActiveUsersMap] = useState<ActiveUsersMap>({});
   const socketRef = useRef<Socket | null>(null);
+  const [activeUsersMap, setActiveUsersMap] = useState<ActiveUsersMap>({});
 
   useEffect(() => {
     const token = document.cookie

@@ -4,12 +4,18 @@ import type { Socket } from 'socket.io-client';
 
 interface VideoChatProps {
   roomId: string;
+  roomMode: 'small' | 'large';
   userNickname?: string;
   onSocketReady?: (socket: Socket) => void;
 }
 
-export const VideoChat: React.FC<VideoChatProps> = ({ roomId, userNickname, onSocketReady }) => {
-  const { localStream, remoteStreams, localVideoRef, socket } = useWebRTC(roomId);
+export const VideoChat: React.FC<VideoChatProps> = ({
+  roomId,
+  roomMode,
+  userNickname,
+  onSocketReady,
+}: VideoChatProps) => {
+  const { localStream, remotePeers, localVideoRef, socket } = useWebRTC(roomId, roomMode);
 
   useEffect(() => {
     if (socket && onSocketReady) {
@@ -17,14 +23,14 @@ export const VideoChat: React.FC<VideoChatProps> = ({ roomId, userNickname, onSo
     }
   }, [socket, onSocketReady]);
 
-  const totalUser = remoteStreams.size + 1;
+  const totalUser = remotePeers.size + 1;
 
   const allVideos = [
     { id: 'local', stream: localStream, label: userNickname, isLocal: true },
-    ...Array.from(remoteStreams.entries()).map(([peerId, stream], index) => ({
+    ...Array.from(remotePeers.entries()).map(([peerId, info], index) => ({
       id: peerId,
-      stream: stream,
-      label: `참가자 ${index + 1}`,
+      stream: info.stream,
+      label: info.nickname ?? `참가자 ${index + 1}`,
       isLocal: false,
     })),
   ];
@@ -76,7 +82,7 @@ export const VideoChat: React.FC<VideoChatProps> = ({ roomId, userNickname, onSo
                   playsInline
                   muted={false}
                   ref={(videoEl) => {
-                    if (videoEl && video.stream) {
+                    if (videoEl && video.stream instanceof MediaStream) {
                       if (videoEl.srcObject !== video.stream) {
                         videoEl.srcObject = video.stream;
                       }

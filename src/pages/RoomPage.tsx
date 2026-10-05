@@ -1,19 +1,21 @@
 import { Link, useParams } from 'react-router-dom';
 import Background from '../components/Background';
 import { useCallback, useEffect, useState } from 'react';
-import { VideoChat } from '../components/VideoChat';
 import api from '../services/api';
 import type { StudyRoom } from '../types/studyroom.types';
 import { IoChatbubbleEllipses } from 'react-icons/io5';
 import { ChatSidebar } from '../components/ChatSidebar';
 import type { Socket } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import AudioChat from '../components/media/AudioChat';
+import { VideoChat } from '../components/VideoChat';
 
 function RoomPage() {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
   const [userNickname, setUserNickname] = useState('');
   const [roomInfo, setRoomInfo] = useState<StudyRoom | null>(null);
+  const [roomMode, setRoomMode] = useState<'small' | 'large' | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -101,6 +103,7 @@ function RoomPage() {
       const { data } = await api.get(`/studyrooms/${roomId}`);
       if (data) {
         setRoomInfo(data);
+        setRoomMode(data.roomType === 'SMALL' ? 'small' : 'large');
       } else {
         setError('존재하지 않는 스터디룸 입니다.');
       }
@@ -179,11 +182,22 @@ function RoomPage() {
         </button>
 
         <div className="w-full h-full flex items-center justify-center">
-          <VideoChat
-            roomId={roomId}
-            userNickname={userNickname}
-            onSocketReady={handleSocketReady}
-          />
+          {roomMode === 'small' && (
+            <VideoChat
+              roomId={roomId}
+              roomMode="small"
+              userNickname={userNickname}
+              onSocketReady={handleSocketReady}
+            />
+          )}
+
+          {roomMode === 'large' && (
+            <AudioChat
+              roomId={roomId}
+              userNickname={userNickname}
+              onSocketReady={handleSocketReady}
+            />
+          )}
         </div>
 
         {socket && (
