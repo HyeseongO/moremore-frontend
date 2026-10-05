@@ -200,6 +200,10 @@ const en: Messages = {
     MESSAGE_SEND_FAILED: 'Failed to send the message.',
     MESSAGE_FETCH_FAILED: 'Failed to load messages.',
     MESSAGE_DELETE_FAILED: 'Failed to delete the message.',
+    DEMO_ACCOUNT_READ_ONLY: "Demo accounts can't be changed or deleted.",
+    INVALID_CURRENT_PASSWORD: 'Your current password is incorrect.',
+    SAME_PASSWORD: 'Your new password must be different from your current password.',
+    PASSWORD_CHANGE_NOT_ALLOWED: "Google accounts can't change their password here.",
   },
   userMenu: {
     open: 'Open account menu',
@@ -210,8 +214,12 @@ const en: Messages = {
   settings: {
     title: 'Settings',
     backToMain: '← Back to main',
+    save: 'Save',
+    saving: 'Saving...',
+    demoNotice: "Demo accounts can't change their nickname or password, or be deleted.",
     profile: {
       title: 'My account',
+      joinedAt: 'Joined {{date}}',
       loadFailed: 'Could not load your account information.',
       providers: {
         EMAIL: 'Email account',
@@ -225,6 +233,39 @@ const en: Messages = {
         ko: '한국어',
         en: 'English',
       },
+    },
+    nickname: {
+      title: 'Change nickname',
+      label: 'New nickname',
+      hint: '2-20 characters: letters, numbers, and symbols (cannot start with a symbol)',
+      success: 'Your nickname has been changed.',
+      failed: 'Could not change your nickname.',
+    },
+    password: {
+      title: 'Change password',
+      current: 'Current password',
+      new: 'New password',
+      newPlaceholder: '8-20 incl. number & symbol',
+      confirm: 'Confirm new password',
+      currentRequired: 'Please enter your current password.',
+      mismatch: 'The new passwords do not match.',
+      submit: 'Change password',
+      success: "Your password has been changed. You'll need to log in again on other devices.",
+      failed: 'Could not change your password.',
+      googleNotice: 'Your password is managed by Google for Google accounts.',
+    },
+    delete: {
+      title: 'Delete account',
+      description:
+        'Deleting your account also deletes the study rooms you host and the chat messages you sent. This cannot be undone.',
+      open: 'Delete account',
+      modalTitle: 'Delete your account?',
+      confirmLabel: 'To confirm, type your nickname "{{nickname}}"',
+      passwordLabel: 'Password',
+      submit: 'Delete account',
+      submitting: 'Deleting...',
+      success: 'Your account has been deleted. Thank you for using Moremore On.',
+      failed: 'Could not delete your account.',
     },
     about: {
       title: 'About',
@@ -284,7 +325,8 @@ const en: Messages = {
         title: '6. Retention and Deletion',
         items: [
           'Account information is kept for as long as your account exists.',
-          'To delete your account and related data, please open a GitHub issue using the link below. We will delete it promptly after confirming the request.',
+          'You can delete your account yourself in Settings > Delete account. This immediately deletes your account information along with the study rooms you host, the chat messages you sent, and your study room memberships.',
+          'If you cannot delete your account yourself, please open a GitHub issue using the link below. We will delete it promptly after confirming the request.',
         ],
       },
       {

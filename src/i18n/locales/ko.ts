@@ -198,6 +198,10 @@ const ko = {
     MESSAGE_SEND_FAILED: '메시지 전송 중 오류가 발생했습니다.',
     MESSAGE_FETCH_FAILED: '메시지를 불러오지 못했습니다.',
     MESSAGE_DELETE_FAILED: '메시지 삭제 중 오류가 발생했습니다.',
+    DEMO_ACCOUNT_READ_ONLY: '데모 계정은 변경하거나 탈퇴할 수 없습니다.',
+    INVALID_CURRENT_PASSWORD: '현재 비밀번호가 올바르지 않습니다.',
+    SAME_PASSWORD: '새 비밀번호가 현재 비밀번호와 같습니다.',
+    PASSWORD_CHANGE_NOT_ALLOWED: 'Google 계정은 비밀번호를 변경할 수 없습니다.',
   },
   userMenu: {
     open: '계정 메뉴 열기',
@@ -208,8 +212,12 @@ const ko = {
   settings: {
     title: '설정',
     backToMain: '← 메인으로',
+    save: '저장',
+    saving: '저장 중...',
+    demoNotice: '데모 계정은 닉네임·비밀번호 변경과 회원 탈퇴를 할 수 없어요.',
     profile: {
       title: '내 정보',
+      joinedAt: '가입일 {{date}}',
       loadFailed: '내 정보를 불러오지 못했습니다.',
       providers: {
         EMAIL: '이메일 계정',
@@ -223,6 +231,39 @@ const ko = {
         ko: '한국어',
         en: 'English',
       },
+    },
+    nickname: {
+      title: '닉네임 변경',
+      label: '새 닉네임',
+      hint: '2-20자, 한글·영문·숫자·특수문자 사용 가능 (특수문자로 시작 불가)',
+      success: '닉네임이 변경되었습니다.',
+      failed: '닉네임을 변경하지 못했습니다.',
+    },
+    password: {
+      title: '비밀번호 변경',
+      current: '현재 비밀번호',
+      new: '새 비밀번호',
+      newPlaceholder: '영문·숫자·특수문자 포함 8-20자',
+      confirm: '새 비밀번호 확인',
+      currentRequired: '현재 비밀번호를 입력해주세요.',
+      mismatch: '새 비밀번호가 일치하지 않습니다.',
+      submit: '비밀번호 변경',
+      success: '비밀번호가 변경되었습니다. 다른 기기에서는 다시 로그인해야 해요.',
+      failed: '비밀번호를 변경하지 못했습니다.',
+      googleNotice: 'Google 계정은 Google에서 비밀번호를 관리해요.',
+    },
+    delete: {
+      title: '회원 탈퇴',
+      description:
+        '탈퇴하면 계정과 함께 내가 방장인 스터디룸, 내가 보낸 채팅 메시지가 모두 삭제되며 되돌릴 수 없어요.',
+      open: '회원 탈퇴',
+      modalTitle: '정말 탈퇴하시겠어요?',
+      confirmLabel: '확인을 위해 닉네임 "{{nickname}}"을(를) 입력해주세요',
+      passwordLabel: '비밀번호',
+      submit: '탈퇴하기',
+      submitting: '탈퇴 처리 중...',
+      success: '회원 탈퇴가 완료되었습니다. 그동안 이용해주셔서 감사합니다.',
+      failed: '회원 탈퇴에 실패했습니다.',
     },
     about: {
       title: '정보',
@@ -282,7 +323,8 @@ const ko = {
         title: '6. 보관 기간과 삭제',
         items: [
           '회원 정보는 계정이 유지되는 동안 보관합니다.',
-          '계정과 관련 데이터 삭제를 원하시면 아래 GitHub 이슈로 요청해주세요. 확인 후 지체 없이 삭제합니다.',
+          '설정 > 회원 탈퇴에서 직접 탈퇴할 수 있으며, 탈퇴하면 계정 정보와 함께 내가 방장인 스터디룸, 내가 보낸 채팅 메시지, 스터디룸 참여 기록이 즉시 삭제됩니다.',
+          '직접 탈퇴가 어려우면 아래 GitHub 이슈로 요청해주세요. 확인 후 지체 없이 삭제합니다.',
         ],
       },
       {

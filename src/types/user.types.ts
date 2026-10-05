@@ -6,4 +6,6 @@ export interface CurrentUser {
   nickname: string;
   authProvider: AuthProvider;
   profileImage?: string | null;
+  createdAt: string;
+  isDemo: boolean;
 }

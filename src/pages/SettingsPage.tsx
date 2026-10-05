@@ -1,21 +1,16 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { ExternalLink, LogOut } from 'lucide-react';
+import { ExternalLink, Info, LogOut } from 'lucide-react';
 import { SUPPORTED_LANGUAGES } from '../i18n';
 import { ISSUES_URL } from '../constants/links';
 import { useLogout } from '../hooks/useLogout';
 import { fetchCurrentUser } from '../services/authService';
 import type { CurrentUser } from '../types/user.types';
-
-function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <section className="rounded-2xl border border-gray-200 p-6">
-      <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
-      <div className="mt-4">{children}</div>
-    </section>
-  );
-}
+import SettingsSection from '../components/settings/SettingsSection';
+import NicknameForm from '../components/settings/NicknameForm';
+import PasswordForm from '../components/settings/PasswordForm';
+import DeleteAccountSection from '../components/settings/DeleteAccountSection';
 
 function SettingsPage() {
   const { t, i18n } = useTranslation();
@@ -40,6 +35,16 @@ function SettingsPage() {
         </Link>
         <h1 className="mt-4 text-2xl font-bold text-gray-900">{t('settings.title')}</h1>
 
+        {user?.isDemo && (
+          <p
+            role="note"
+            className="mt-6 flex items-start gap-2 rounded-2xl bg-amber-50 px-4 py-3 text-sm text-amber-800"
+          >
+            <Info size={18} className="mt-0.5 shrink-0" />
+            {t('settings.demoNotice')}
+          </p>
+        )}
+
         <div className="mt-8 space-y-6">
           <SettingsSection title={t('settings.profile.title')}>
             {user ? (
@@ -60,9 +65,20 @@ function SettingsPage() {
                 <div className="min-w-0">
                   <p className="truncate text-lg font-semibold text-gray-900">{user.nickname}</p>
                   <p className="truncate text-sm text-gray-600">{user.email}</p>
-                  <span className="mt-1 inline-block rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">
-                    {t(`settings.profile.providers.${user.authProvider}`)}
-                  </span>
+                  <div className="mt-1 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700">
+                      {t(`settings.profile.providers.${user.authProvider}`)}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {t('settings.profile.joinedAt', {
+                        date: new Date(user.createdAt).toLocaleDateString(i18n.resolvedLanguage, {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }),
+                      })}
+                    </span>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -71,6 +87,23 @@ function SettingsPage() {
               </p>
             )}
           </SettingsSection>
+
+          {user && (
+            <>
+              <NicknameForm
+                nickname={user.nickname}
+                disabled={user.isDemo}
+                onChanged={(nickname) => setUser({ ...user, nickname })}
+              />
+              {user.authProvider === 'EMAIL' ? (
+                <PasswordForm disabled={user.isDemo} />
+              ) : (
+                <SettingsSection title={t('settings.password.title')}>
+                  <p className="text-sm text-gray-600">{t('settings.password.googleNotice')}</p>
+                </SettingsSection>
+              )}
+            </>
+          )}
 
           <SettingsSection title={t('settings.language.title')}>
             <p className="text-sm text-gray-600">{t('settings.language.description')}</p>
@@ -129,6 +162,8 @@ function SettingsPage() {
             <LogOut size={18} />
             {isLoggingOut ? t('userMenu.loggingOut') : t('userMenu.logout')}
           </button>
+
+          {user && <DeleteAccountSection user={user} disabled={user.isDemo} />}
         </div>
       </main>
     </div>
