@@ -1,12 +1,3 @@
 {
-  "rewrites": [
-    {
-      "source": "/auth/:path*",
-      "destination": "http://moremore-on-staging.ap-northeast-2.elasticbeanstalk.com/auth/:path*"
-    },
-    {
-      "source": "/studyrooms/:path*",
-      "destination": "http://moremore-on-staging.ap-northeast-2.elasticbeanstalk.com/studyrooms/:path*"
-    }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
