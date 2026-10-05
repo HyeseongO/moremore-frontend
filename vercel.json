@@ -1,3 +1,8 @@
 {
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/auth/:path*", "destination": "https://d2p7jngdddaqwe.cloudfront.net/auth/:path*" },
+    { "source": "/studyrooms/:path*", "destination": "https://d2p7jngdddaqwe.cloudfront.net/studyrooms/:path*" },
+    { "source": "/webrtc/:path*", "destination": "https://d2p7jngdddaqwe.cloudfront.net/webrtc/:path*" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
