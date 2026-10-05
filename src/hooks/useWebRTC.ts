@@ -4,6 +4,7 @@ import io, { Socket } from 'socket.io-client';
 interface PeerConnection {
   pc: RTCPeerConnection;
   stream?: MediaStream;
+  pendingCandidates: RTCIceCandidateInit[];
 }
 
 interface UseWebRTCResult {
@@ -30,6 +31,7 @@ export const useWebRTC = (
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const peersRef = useRef<Map<string, PeerConnection>>(new Map());
+  const mediaReadyRef = useRef<Promise<void> | null>(null);
 
   const rtcConfig: RTCConfiguration = {
     iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
@@ -37,27 +39,29 @@ export const useWebRTC = (
 
   useEffect(() => {
     if (!roomMode) return;
-    let stream: MediaStream;
+    let cancelled = false;
 
     const initLocalMedia = async () => {
-      stream = await navigator.mediaDevices.getUserMedia(
+      const stream = await navigator.mediaDevices.getUserMedia(
         roomMode === 'small' ? { video: true, audio: true } : { video: false, audio: true }
       );
+      if (cancelled) {
+        stream.getTracks().forEach((t) => t.stop());
+        return;
+      }
       setLocalStream(stream);
       localStreamRef.current = stream;
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
         await localVideoRef.current.play().catch(() => {});
       }
-
-      peersRef.current.forEach(({ pc }) => {
-        stream.getTracks().forEach((track) => pc.addTrack(track, stream));
-      });
     };
-    initLocalMedia().catch(console.error);
+    mediaReadyRef.current = initLocalMedia().catch(console.error);
 
     return () => {
+      cancelled = true;
       localStreamRef.current?.getTracks().forEach((t) => t.stop());
+      localStreamRef.current = null;
       setLocalStream(null);
     };
   }, [roomMode]);
@@ -86,8 +90,17 @@ export const useWebRTC = (
       });
     };
 
-    peersRef.current.set(peerId, { pc });
+    peersRef.current.set(peerId, { pc, pendingCandidates: [] });
     return pc;
+  };
+
+  const flushPendingCandidates = async (peerId: string) => {
+    const peer = peersRef.current.get(peerId);
+    if (!peer) return;
+    const candidates = peer.pendingCandidates.splice(0);
+    for (const cand of candidates) {
+      await peer.pc.addIceCandidate(cand).catch(console.error);
+    }
   };
 
   const makeOffer = async (peerId: string) => {
@@ -100,6 +113,7 @@ export const useWebRTC = (
   const handleOffer = async (peerId: string, offer: RTCSessionDescriptionInit) => {
     const pc = getPeerConnection(peerId);
     await pc.setRemoteDescription(offer);
+    await flushPendingCandidates(peerId);
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
     socketRef.current?.emit('answer', { to: peerId, answer });
@@ -107,12 +121,20 @@ export const useWebRTC = (
 
   const handleAnswer = async (peerId: string, answer: RTCSessionDescriptionInit) => {
     const pc = peersRef.current.get(peerId)?.pc;
-    pc && (await pc.setRemoteDescription(answer));
+    if (!pc) return;
+    await pc.setRemoteDescription(answer);
+    await flushPendingCandidates(peerId);
   };
 
-  const handleCandidate = async (peerId: string, cand: RTCIceCandidate) => {
-    const pc = peersRef.current.get(peerId)?.pc;
-    pc && cand && (await pc.addIceCandidate(cand));
+  const handleCandidate = async (peerId: string, cand: RTCIceCandidateInit) => {
+    if (!cand) return;
+    getPeerConnection(peerId);
+    const peer = peersRef.current.get(peerId)!;
+    if (!peer.pc.remoteDescription) {
+      peer.pendingCandidates.push(cand);
+      return;
+    }
+    await peer.pc.addIceCandidate(cand).catch(console.error);
   };
 
   useEffect(() => {
@@ -123,9 +145,9 @@ export const useWebRTC = (
     socketRef.current = socket;
     setSocket(socket);
 
-    socket.on('connect', () => {
-      console.log('[socket] connected:', socket.id);
-      socket.emit('join-room', roomId);
+    socket.on('connect', async () => {
+      await mediaReadyRef.current;
+      if (socket.connected) socket.emit('join-room', roomId);
     });
     socket.on(
       'existing-users',
@@ -152,7 +174,6 @@ export const useWebRTC = (
       }) => {
         if (userId === socket.id) return;
         setRemotePeers((prev) => new Map(prev).set(userId, { nickname, profileImage }));
-        makeOffer(userId);
       }
     );
 
