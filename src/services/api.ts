@@ -10,6 +10,18 @@ const api: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
+let refreshPromise: Promise<void> | null = null;
+
+const refreshSession = () => {
+  refreshPromise ??= api
+    .post('/auth/refresh')
+    .then(() => undefined)
+    .finally(() => {
+      refreshPromise = null;
+    });
+  return refreshPromise;
+};
+
 api.interceptors.response.use(
   (response) => {
     return response;
@@ -25,7 +37,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await api.post('/auth/refresh');
+        await refreshSession();
         return api(originalRequest);
       } catch {
         window.location.href = '/';
